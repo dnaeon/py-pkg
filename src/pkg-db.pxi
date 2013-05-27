@@ -23,3 +23,6 @@ cdef class PkgDb(object):
     def __dealloc__(self):
         c_pkg.pkgdb_close(self._db)
 
+    def close(self):
+        c_pkg.pkgdb_close(self._db)
+        
