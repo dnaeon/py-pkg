@@ -1,0 +1,4 @@
+
+class PkgNotInitialized(Exception):
+    pass
+
