@@ -27,11 +27,11 @@ cdef extern from 'pkg.h':
 
     cdef struct pkg_manifest_key
 
-    cdef enum pkgdb_t:
+    ctypedef enum pkgdb_t:
         PKGDB_DEFAULT = 0,
         PKGDB_REMOTE
 
-    cdef enum pkg_error_t:
+    ctypedef pkg_error_t:
         EPKG_OK = 0,
         EPKG_END,
         EPKG_WARN,
