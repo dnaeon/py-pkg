@@ -31,7 +31,7 @@ cdef extern from 'pkg.h':
         PKGDB_DEFAULT = 0,
         PKGDB_REMOTE
 
-    ctypedef pkg_error_t:
+    ctypedef enum pkg_error_t:
         EPKG_OK = 0,
         EPKG_END,
         EPKG_WARN,
