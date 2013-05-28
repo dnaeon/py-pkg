@@ -26,3 +26,27 @@ cdef class PkgDb(object):
     cpdef close(self):
         c_pkg.pkgdb_close(self._db)
         
+    cpdef query(self, pattern=None, match_regex=False):
+        cdef c_pkg.pkgdb_it *_it = NULL
+        cdef c_pkg.match_t _match = c_pkg.MATCH_EXACT
+
+        # TODO: Implement the rest of the match_t types
+        
+        if match_regex:
+            _match = c_pkg.MATCH_REGEX
+
+        _it = c_pkg.pkgdb_query(db=self._db, pattern=pattern, match=_match)
+
+        if _it == NULL:
+            raise IOError, 'Cannot query the package database'
+
+        return PkgDbIter(<object>_it)
+
+
+cdef class PkgDbIter(object):
+    cdef c_pkg.pkgdb_it *_it
+    
+    def __cinit__(self, it):
+        self._it = <c_pkg.pkgdb_it *>it
+
+        

@@ -45,11 +45,30 @@ cdef extern from 'pkg.h':
         EPKG_UNKNOWN,
         EPKG_REPOSCHEMA,
         EPKG_ENOACCESS,
-        EPKG_INSECURE
+        EPKG_INSECURE,
+
+    ctypedef enum match_t:
+        MATCH_ALL = 0,
+        MATCH_EXACT,
+        MATCH_GLOB,
+        MATCH_REGEX,
+        MATCH_CONDITION,
 
     int pkg_init(const char *path)
     int pkg_initialized()
     int pkg_shutdown()
 
-    int   pkgdb_open(pkgdb **db, pkgdb_t db_type)
+    int   pkgdb_open(pkgdb **db,
+                     pkgdb_t db_type)
+
     void  pkgdb_close(pkgdb *db)
+
+    pkgdb_it *pkgdb_query(pkgdb *db,
+                          const char *pattern,
+                          match_t match)
+
+    int pkgdb_it_next(pkgdb_it *it, pkg **pkg, unsigned flags)
+    
+
+    int pkg_get(const pkg *pkg, ...)
+    
