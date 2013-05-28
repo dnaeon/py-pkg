@@ -54,6 +54,23 @@ cdef extern from 'pkg.h':
         MATCH_REGEX,
         MATCH_CONDITION,
 
+    ctypedef enum pkg_load_flags:
+        PKG_LOAD_BASIC            = 0,
+        PKG_LOAD_DEPS             = (1 << 0),
+        PKG_LOAD_RDEPS            = (1 << 1),
+        PKG_LOAD_FILES            = (1 << 2),
+        PKG_LOAD_SCRIPTS          = (1 << 3),
+        PKG_LOAD_OPTIONS          = (1 << 4),
+        PKG_LOAD_MTREE            = (1 << 5),
+        PKG_LOAD_DIRS             = (1 << 6),
+        PKG_LOAD_CATEGORIES       = (1 << 7),
+        PKG_LOAD_LICENSES         = (1 << 8),
+        PKG_LOAD_USERS            = (1 << 9),
+        PKG_LOAD_GROUPS           = (1 << 10),
+        PKG_LOAD_SHLIBS_REQUIRED  = (1 << 11),
+        PKG_LOAD_SHLIBS_PROVIDED  = (1 << 12),
+        PKG_LOAD_ANNOTATIONS      = (1 << 13),
+
     int pkg_init(const char *path)
     int pkg_initialized()
     int pkg_shutdown()
@@ -68,7 +85,10 @@ cdef extern from 'pkg.h':
                           match_t match)
 
     int pkgdb_it_next(pkgdb_it *it, pkg **pkg, unsigned flags)
-    
 
+    void pkgdb_it_free(pkgdb_it *it)
+
+    void pkg_free(pkg *pkg)
+    
     int pkg_get(const pkg *pkg, ...)
     

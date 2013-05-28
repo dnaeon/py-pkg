@@ -42,11 +42,34 @@ cdef class PkgDb(object):
 
         return PkgDbIter(<object>_it)
 
-
 cdef class PkgDbIter(object):
     cdef c_pkg.pkgdb_it *_it
+    cdef unsigned _flags
     
     def __cinit__(self, it):
         self._it = <c_pkg.pkgdb_it *>it
+        self._flags = c_pkg.PKG_LOAD_BASIC
 
-        
+    def __dealloc__(self):
+        c_pkg.pkgdb_it_free(it=self._it)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        cdef c_pkg.pkg *pkg = NULL
+        result = c_pkg.pkgdb_it_next(it=self._it, pkg=&pkg, flags=self._flags)
+
+        if result != c_pkg.EPKG_OK:
+            raise StopIteration
+
+        return Pkg(<object>pkg)
+
+cdef class Pkg(object):
+    cdef c_pkg.pkg *_pkg
+
+    def __cinit__(self, pkg):
+        self._pkg = <c_pkg.pkg *>pkg
+
+    def __dealloc__(self):
+        c_pkg.pkg_free(pkg=self._pkg)
