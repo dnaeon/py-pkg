@@ -14,7 +14,7 @@ cdef class Pkg(object):
     cdef pkg_get_attr_str(self, c_pkg.pkg_attr attr):
         c_pkg.pkg_get(self._pkg, attr, &self._attr_str)
 
-        return self._attr_val
+        return self._attr_str
 
     cdef pkg_get_attr_bool(self, c_pkg.pkg_attr attr):
         c_pkg.pkg_get(self._pkg, attr, &self._attr_bool)
