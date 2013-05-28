@@ -61,6 +61,7 @@ cdef class PkgDbIter(object):
         result = c_pkg.pkgdb_it_next(it=self._it, pkg=&pkg, flags=self._flags)
 
         if result != c_pkg.EPKG_OK:
+            c_pkg.pkgdb_it_reset(it=self._it)
             raise StopIteration
 
         return Pkg(<object>pkg)

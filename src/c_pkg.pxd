@@ -115,6 +115,8 @@ cdef extern from 'pkg.h':
 
     int pkgdb_it_next(pkgdb_it *it, pkg **pkg, unsigned flags)
 
+    void pkgdb_it_reset(pkgdb_it *it)
+
     void pkgdb_it_free(pkgdb_it *it)
 
     void pkg_free(pkg *pkg)
