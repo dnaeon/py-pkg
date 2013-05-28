@@ -74,5 +74,10 @@ cdef class PkgDbIter(object):
 
         return i
         
-    
+    def __contains__(self, name):
+        for p in self:
+            if p.name() == name or p.origin == name:
+                return True
+
+        return False
     
