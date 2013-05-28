@@ -100,6 +100,11 @@ cdef extern from 'pkg.h':
         PKG_ROWID,
         PKG_TIME
 
+    ctypedef enum lic_t:
+        LICENSE_OR     = 124, # '|'
+        LICENSE_AND    = 38,  # '&'
+        LICENSE_SINGLE = 1,
+
     int pkg_init(const char *path)
     int pkg_initialized()
     int pkg_shutdown()
