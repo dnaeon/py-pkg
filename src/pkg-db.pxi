@@ -66,4 +66,13 @@ cdef class PkgDbIter(object):
 
         return Pkg(<object>pkg)
 
+    def __len__(self):
+        cdef unsigned i = 0
+
+        for p in self:
+            i += 1
+
+        return i
         
+    
+    
