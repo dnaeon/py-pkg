@@ -80,5 +80,25 @@ cdef class Pkg(object):
     cpdef digest(self):
         return self.pkg_get_attr_str(c_pkg.PKG_DIGEST)
 
+    cpdef old_flatsize(self):
+        return self.pkg_get_attr_int(c_pkg.PKG_OLD_FLATSIZE)
+
+    cpdef size(self):
+        return self.pkg_get_attr_int(c_pkg.PKG_PKGSIZE)
+
+    cpdef license_logic(self):
+        return self.pkg_get_attr_int(c_pkg.PKG_LICENSE_LOGIC)
+
+    cpdef automatic(self):
+        return self.pkg_get_attr_bool(c_pkg.PKG_AUTOMATIC)
+
+    cpdef locked(self):
+        return self.pkg_get_attr_bool(c_pkg.PKG_AUTOMATIC)
+
+    cpdef rowid(self):
+        return self.pkg_get_attr_int(c_pkg.PKG_ROWID)
+
+    cpdef time(self):
+        return self.pkg_get_attr_int(c_pkg.PKG_TIME)
     
 
