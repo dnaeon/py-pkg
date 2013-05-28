@@ -9,7 +9,10 @@ cdef class Pkg(object):
         self._pkg = <c_pkg.pkg *>pkg                                                                                     
 
     def __dealloc__(self):                                                                                               
-        c_pkg.pkg_free(pkg=self._pkg)                                                                                    
+        c_pkg.pkg_free(pkg=self._pkg)
+
+    def __str__(self):
+        return '%s-%s' % (self.name(), self.version())
 
     cdef pkg_get_attr_str(self, c_pkg.pkg_attr attr):
         c_pkg.pkg_get(self._pkg, attr, &self._attr_str)
