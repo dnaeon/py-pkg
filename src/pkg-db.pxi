@@ -27,29 +27,34 @@ cdef class PkgDb(object):
         c_pkg.pkgdb_close(self._db)
         
     cpdef query(self, pattern=None, match_regex=False):
-        cdef c_pkg.pkgdb_it *_it = NULL
-        cdef c_pkg.match_t _match = c_pkg.MATCH_EXACT
+        cdef c_pkg.pkgdb_it *it = NULL
+        cdef c_pkg.match_t match = c_pkg.MATCH_EXACT
+        dbiter_obj = PkgDbIter()
 
         # TODO: Implement the rest of the match_t types
         
         if match_regex:
             _match = c_pkg.MATCH_REGEX
 
-        _it = c_pkg.pkgdb_query(db=self._db, pattern=pattern, match=_match)
+        it = c_pkg.pkgdb_query(db=self._db, pattern=pattern, match=match)
 
-        if _it == NULL:
+        if it == NULL:
             raise IOError, 'Cannot query the package database'
 
-        return PkgDbIter(<object>_it)
+        dbiter_obj._init(it)
+
+        return dbiter_obj
 
 cdef class PkgDbIter(object):
     cdef c_pkg.pkgdb_it *_it
     cdef unsigned _flags
-    
-    def __cinit__(self, it):
-        self._it = <c_pkg.pkgdb_it *>it
+
+    def __cinit__(self):
         self._flags = c_pkg.PKG_LOAD_BASIC
 
+    cdef _init(self, c_pkg.pkgdb_it *it):
+        self._it = it
+        
     def __dealloc__(self):
         c_pkg.pkgdb_it_free(it=self._it)
 
@@ -58,13 +63,17 @@ cdef class PkgDbIter(object):
 
     def __next__(self):
         cdef c_pkg.pkg *pkg = NULL
+        pkg_obj = Pkg()
+        
         result = c_pkg.pkgdb_it_next(it=self._it, pkg=&pkg, flags=self._flags)
 
         if result != c_pkg.EPKG_OK:
             c_pkg.pkgdb_it_reset(it=self._it)
             raise StopIteration
 
-        return Pkg(<object>pkg)
+        pkg_obj._init(pkg)
+            
+        return pkg_obj
 
     def __len__(self):
         cdef unsigned i = 0
