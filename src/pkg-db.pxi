@@ -26,7 +26,7 @@ cdef class PkgDb(object):
     cpdef close(self):
         c_pkg.pkgdb_close(self._db)
         
-    cpdef query(self, pattern=None, match_regex=False):
+    cpdef query(self, pattern='', match_regex=False):
         cdef c_pkg.pkgdb_it *it = NULL
         cdef c_pkg.match_t match = c_pkg.MATCH_EXACT
         dbiter_obj = PkgDbIter()
@@ -34,7 +34,10 @@ cdef class PkgDb(object):
         # TODO: Implement the rest of the match_t types
         
         if match_regex:
-            _match = c_pkg.MATCH_REGEX
+            match = c_pkg.MATCH_REGEX
+
+        if not pattern:
+            match = c_pkg.MATCH_ALL
 
         it = c_pkg.pkgdb_query(db=self._db, pattern=pattern, match=match)
 
