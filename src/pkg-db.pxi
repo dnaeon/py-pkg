@@ -93,3 +93,45 @@ cdef class PkgDbIter(object):
 
         return False
     
+    cpdef load_deps(self):
+        self._flags |= c_pkg.PKG_LOAD_DEPS
+
+    cpdef load_rdeps(self):
+        self._flags |= c_pkg.PKG_LOAD_RDEPS
+
+    cpdef load_files(self):
+        self._flags |= c_pkg.PKG_LOAD_FILES
+
+    cpdef load_scripts(self):
+        self._flags |= c_pkg.PKG_LOAD_SCRIPTS
+
+    cpdef load_options(self):
+        self._flags |= c_pkg.PKG_LOAD_OPTIONS
+
+    cpdef load_mtree(self):
+        self._flags |= c_pkg.PKG_LOAD_MTREE
+
+    cpdef load_dirs(self):
+        self._flags |= c_pkg.PKG_LOAD_DIRS
+
+    cpdef load_categories(self):
+        self._flags |= c_pkg.PKG_LOAD_CATEGORIES
+
+    cpdef load_licenses(self):
+        self._flags |= c_pkg.PKG_LOAD_LICENSES
+
+    cpdef load_users(self):
+        self._flags |= c_pkg.PKG_LOAD_USERS
+
+    cpdef load_groups(self):
+        self._flags |= c_pkg.PKG_LOAD_GROUPS
+
+    cpdef load_shlibs_required(self):
+        self._flags |= c_pkg.PKG_LOAD_SHLIBS_REQUIRED
+
+    cpdef load_shlibs_provided(self):
+        self._flags |= c_pkg.PKG_LOAD_SHLIBS_PROVIDED
+
+    cpdef load_annotations(self):
+        self._flags |= c_pkg.PKG_LOAD_ANNOTATIONS
+        
