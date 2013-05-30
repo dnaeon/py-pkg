@@ -135,5 +135,6 @@ cdef extern from 'pkg.h':
 
     const char *pkg_dep_get(pkg_dep *dep, pkg_dep_attr attr)
     int pkg_deps(const pkg *pkg, pkg_dep **dep)
+    int pkg_rdeps(const pkg *pkg, pkg_dep **dep)
     
     

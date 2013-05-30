@@ -114,3 +114,9 @@ cdef class Pkg(object):
         deps_iter_obj._init(self._pkg)
 
         return deps_iter_obj
+
+    cpdef rdeps(self):
+        rdeps_iter_obj = PkgRdepIter()
+        rdeps_iter_obj._init(self._pkg)
+
+        return rdeps_iter_obj
