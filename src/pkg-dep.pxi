@@ -36,6 +36,14 @@ cdef class PkgDepIter(object):
     def __iter__(self):
         return self
 
+    def __len__(self):
+        cdef unsigned i = 0
+
+        for d in self:
+            i += 1
+
+        return i
+
     def __next__(self):
         result = c_pkg.pkg_deps(pkg=self._pkg, dep=&self._dep)
 
