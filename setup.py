@@ -15,6 +15,8 @@ setup(name='pkg',
                         include_dirs=['/usr/local/include'],
                         library_dirs=['/usr/local/lib'],
                         libraries=['pkg'],
+                        extra_compile_args=['-g', '--std=c99'],
+                        extra_link_args=['-g'],
                     )]
 )
 
