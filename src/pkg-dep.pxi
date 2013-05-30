@@ -44,6 +44,13 @@ cdef class PkgDepIter(object):
 
         return i
 
+    def __contains__(self, name):
+        for d in self:
+            if d.name() == name or d.origin() == name:
+                return True
+
+        return False
+
     def __next__(self):
         result = c_pkg.pkg_deps(pkg=self._pkg, dep=&self._dep)
 
