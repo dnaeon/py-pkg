@@ -98,7 +98,12 @@ cdef extern from 'pkg.h':
         PKG_AUTOMATIC,
         PKG_LOCKED,
         PKG_ROWID,
-        PKG_TIME
+        PKG_TIME,
+
+    ctypedef enum pkg_dep_attr:
+        PKG_DEP_NAME = 0,
+        PKG_DEP_ORIGIN,
+        PKG_DEP_VERSION,
 
     ctypedef enum lic_t:
         LICENSE_OR     = 124, # '|'
@@ -127,4 +132,8 @@ cdef extern from 'pkg.h':
     void pkg_free(pkg *pkg)
     
     int pkg_get(const pkg *pkg, ...)
+
+    const char *pkg_dep_get(pkg_dep *dep, pkg_dep_attr attr)
+    int pkg_deps(const pkg *pkg, pkg_dep **dep)
+    
     
