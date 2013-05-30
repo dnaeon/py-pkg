@@ -81,6 +81,8 @@ cdef class PkgDbIter(object):
     def __len__(self):
         cdef unsigned i = 0
 
+        c_pkg.pkgdb_it_reset(it=self._it)
+        
         for p in self:
             i += 1
 
