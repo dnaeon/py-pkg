@@ -24,13 +24,62 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-cimport c_pkg
+cdef class PkgCategory(object):
+    cdef c_pkg.pkg_category *_category
 
-include 'pkg-exc.py'
-include 'pkg-db.pxi'
-include 'pkg-pkg.pxi'
-include 'pkg-dep.pxi'
-include 'pkg-rdep.pxi'
-include 'pkg-file.pxi'
-include 'pkg-dir.pxi'
-include 'pkg-category.pxi'
+    def __cinit__(self):
+        self._category = NULL
+
+    cdef _init(self, c_pkg.pkg_category *category):
+        self._category = category
+
+    def __dealloc__(self):
+        pass
+
+    def __str__(self):
+        return '%s' % self.name()
+        
+    cpdef name(self):
+        return c_pkg.pkg_category_name(category=self._category)
+
+cdef class PkgCategoryIter(object):
+    cdef c_pkg.pkg *_pkg
+    cdef c_pkg.pkg_category *_category
+
+    def __cinit__(self):
+        self._category = NULL
+
+    cdef _init(self, c_pkg.pkg *pkg):
+        self._pkg = pkg
+
+    def __dealloc__(self):
+        pass
+
+    def __iter__(self):
+        return self
+
+    def __len__(self):
+        cdef unsigned i = 0
+
+        for c in self:
+            i += 1
+
+        return i
+
+    def __contains__(self, name):
+        for c in self:
+            if c.name() == name:
+                return True
+
+        return False
+
+    def __next__(self):
+        result = c_pkg.pkg_categories(pkg=self._pkg, category=&self._category)
+
+        if result != c_pkg.EPKG_OK:
+            raise StopIteration
+
+        pkg_category_obj = PkgCategory()
+        pkg_category_obj._init(self._category)
+
+        return pkg_category_obj

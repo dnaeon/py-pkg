@@ -181,4 +181,7 @@ cdef extern from 'pkg.h':
     int pkg_dirs(const pkg *pkg, pkg_dir **dir)
     const char *pkg_dir_get(pkg_dir *dir, const pkg_dir_attr attr)
     
+    int pkg_categories(const pkg *pkg, pkg_category **category)
+    const char *pkg_category_name(pkg_category *category)
+    
     
