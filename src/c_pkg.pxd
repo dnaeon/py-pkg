@@ -188,4 +188,8 @@ cdef extern from 'pkg.h':
     const char *pkg_option_opt(const pkg_option *option)
     const char *pkg_option_value(const pkg_option *option)
     
+    int pkg_licenses(const pkg *pkg, pkg_license **license)
+    const char *pkg_license_name(const pkg_license *license)
+    
+    
     

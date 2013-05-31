@@ -172,4 +172,10 @@ cdef class Pkg(object):
         options_iter_obj._init(self._pkg)
 
         return options_iter_obj
-        
+
+    cpdef licenses(self):
+        licenses_iter_obj = PkgLicenseIter()
+        licenses_iter_obj._init(self._pkg)
+
+        return licenses_iter_obj
+    
