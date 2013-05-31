@@ -195,5 +195,8 @@ cdef extern from 'pkg.h':
     const char *pkg_user_name(const pkg_user *user)
     const char *pkg_user_uidstr(const pkg_user *user)
     
-    
-    
+    int pkg_groups(const pkg *pkg, pkg_group **group)
+    const char *pkg_group_name(const pkg_group *group)
+    const char *pkg_group_gidstr(const pkg_group *group)
+
+

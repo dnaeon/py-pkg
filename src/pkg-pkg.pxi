@@ -184,3 +184,9 @@ cdef class Pkg(object):
         users_iter_obj._init(self._pkg)
 
         return users_iter_obj
+
+    cpdef groups(self):
+        groups_iter_obj = PkgGroupIter()
+        groups_iter_obj._init(self._pkg)
+
+        return groups_iter_obj
