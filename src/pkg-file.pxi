@@ -57,3 +57,10 @@ cdef class PkgFileIter(object):
         pkg_files_obj._init(self._p_file)
 
         return pkg_files_obj
+
+    def __contains__(self, path):
+        for f in self:
+            if f.path() == path:
+                return True
+
+        return False
