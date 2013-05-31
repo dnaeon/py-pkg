@@ -11,6 +11,9 @@ cdef class PkgDep(object):
     def __dealloc__(self):
         pass
 
+    def __str__(self):
+        return '%s-%s' % (self.name(), self.version())
+        
     cpdef name(self):
         return c_pkg.pkg_dep_get(dep=self._dep, attr=c_pkg.PKG_DEP_NAME)
 
