@@ -110,6 +110,12 @@ cdef extern from 'pkg.h':
         LICENSE_AND    = 38,  # '&'
         LICENSE_SINGLE = 1,
 
+    ctypedef enum pkg_file_attr:
+        PKG_FILE_PATH = 0,
+        PKG_FILE_SUM,
+        PKG_FILE_UNAME,
+        PKG_FILE_GNAME
+    
     int pkg_init(const char *path)
     int pkg_initialized()
     int pkg_shutdown()
@@ -136,5 +142,9 @@ cdef extern from 'pkg.h':
     const char *pkg_dep_get(pkg_dep *dep, pkg_dep_attr attr)
     int pkg_deps(const pkg *pkg, pkg_dep **dep)
     int pkg_rdeps(const pkg *pkg, pkg_dep **dep)
+    int pkg_files(const pkg *pkg, pkg_file **p_file)
+    const char *pkg_file_get(pkg_file *p_file, const pkg_file_attr attr)
+    
+    
     
     

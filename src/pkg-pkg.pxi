@@ -120,3 +120,10 @@ cdef class Pkg(object):
         rdeps_iter_obj._init(self._pkg)
 
         return rdeps_iter_obj
+
+    cpdef files(self):
+        files_iter_obj = PkgFileIter()
+        files_iter_obj._init(self._pkg)
+
+        return files_iter_obj
+        
