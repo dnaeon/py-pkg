@@ -24,14 +24,67 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-cimport c_pkg
+cdef class PkgOption(object):
+    cdef c_pkg.pkg_option *_option
 
-include 'pkg-exc.py'
-include 'pkg-db.pxi'
-include 'pkg-pkg.pxi'
-include 'pkg-dep.pxi'
-include 'pkg-rdep.pxi'
-include 'pkg-file.pxi'
-include 'pkg-dir.pxi'
-include 'pkg-category.pxi'
-include 'pkg-option.pxi'
+    def __cinit__(self):
+        self._option = NULL
+
+    cdef _init(self, c_pkg.pkg_option *option):
+        self._option = option
+
+    def __dealloc__(self):
+        pass
+
+    def __str__(self):
+        return '%s: %s' % (self.name(), self.value())
+        
+    cpdef name(self):
+        return c_pkg.pkg_option_opt(option=self._option)
+
+    cpdef value(self):
+        return c_pkg.pkg_option_value(option=self._option)
+
+cdef class PkgOptionIter(object):
+    cdef c_pkg.pkg *_pkg
+    cdef c_pkg.pkg_option *_option
+
+    def __cinit__(self):
+        self._option = NULL
+
+    cdef _init(self, c_pkg.pkg *pkg):
+        self._pkg = pkg
+
+    def __dealloc__(self):
+        pass
+
+    def __iter__(self):
+        return self
+
+    def __len__(self):
+        cdef unsigned i = 0
+
+        for d in self:
+            i += 1
+
+        return i
+
+    def __contains__(self, name):
+        for o in self:
+            if o.name() == name:
+                return True
+
+        return False
+
+    def __next__(self):
+        result = c_pkg.pkg_options(pkg=self._pkg, option=&self._option)
+
+        if result != c_pkg.EPKG_OK:
+            raise StopIteration
+
+        pkg_option_obj = PkgOption()
+        pkg_option_obj._init(self._option)
+
+        return pkg_option_obj
+            
+

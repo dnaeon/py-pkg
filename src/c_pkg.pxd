@@ -183,5 +183,9 @@ cdef extern from 'pkg.h':
     
     int pkg_categories(const pkg *pkg, pkg_category **category)
     const char *pkg_category_name(pkg_category *category)
+
+    int pkg_options(const pkg *pkg, pkg_option **option)
+    const char *pkg_option_opt(const pkg_option *option)
+    const char *pkg_option_value(const pkg_option *option)
     
     

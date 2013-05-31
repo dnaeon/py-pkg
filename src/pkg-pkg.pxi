@@ -166,3 +166,10 @@ cdef class Pkg(object):
         categories_iter_obj._init(self._pkg)
 
         return categories_iter_obj
+
+    cpdef options(self):
+        options_iter_obj = PkgOptionIter()
+        options_iter_obj._init(self._pkg)
+
+        return options_iter_obj
+        
