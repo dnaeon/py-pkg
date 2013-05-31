@@ -114,7 +114,12 @@ cdef extern from 'pkg.h':
         PKG_FILE_PATH = 0,
         PKG_FILE_SUM,
         PKG_FILE_UNAME,
-        PKG_FILE_GNAME
+        PKG_FILE_GNAME,
+
+    ctypedef enum pkg_dir_attr:
+        PKG_DIR_PATH = 0,
+        PKG_DIR_UNAME,
+        PKG_DIR_GNAME,
     
     int pkg_init(const char *path)
     int pkg_initialized()
@@ -141,10 +146,12 @@ cdef extern from 'pkg.h':
 
     const char *pkg_dep_get(pkg_dep *dep, pkg_dep_attr attr)
     int pkg_deps(const pkg *pkg, pkg_dep **dep)
+
     int pkg_rdeps(const pkg *pkg, pkg_dep **dep)
+
     int pkg_files(const pkg *pkg, pkg_file **p_file)
     const char *pkg_file_get(pkg_file *p_file, const pkg_file_attr attr)
     
-    
-    
+    int pkg_dirs(const pkg *pkg, pkg_dir **dir)
+    const char *pkg_dir_get(pkg_dir *dir, const pkg_dir_attr attr)
     

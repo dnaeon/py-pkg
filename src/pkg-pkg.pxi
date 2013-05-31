@@ -126,4 +126,9 @@ cdef class Pkg(object):
         files_iter_obj._init(self._pkg)
 
         return files_iter_obj
-        
+
+    cpdef dirs(self):
+        dirs_iter_obj = PkgDirIter()
+        dirs_iter_obj._init(self._pkg)
+
+        return dirs_iter_obj
