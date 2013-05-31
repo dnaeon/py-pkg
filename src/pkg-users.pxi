@@ -24,16 +24,66 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-cimport c_pkg
+cdef class PkgUser(object):
+    cdef c_pkg.pkg_user *_user
 
-include 'pkg-exc.py'
-include 'pkg-db.pxi'
-include 'pkg-pkg.pxi'
-include 'pkg-dep.pxi'
-include 'pkg-rdep.pxi'
-include 'pkg-file.pxi'
-include 'pkg-dir.pxi'
-include 'pkg-category.pxi'
-include 'pkg-option.pxi'
-include 'pkg-license.pxi'
-include 'pkg-users.pxi'
+    def __cinit__(self):
+        self._user = NULL
+
+    cdef _init(self, c_pkg.pkg_user *user):
+        self._user = user
+
+    def __dealloc__(self):
+        pass
+
+    def __str__(self):
+        return '%s' % self.name()
+        
+    cpdef name(self):
+        return c_pkg.pkg_user_name(user=self._user)
+
+    cpdef uid(self):
+        return c_pkg.pkg_user_uidstr(user=self._user)
+
+cdef class PkgUserIter(object):
+    cdef c_pkg.pkg *_pkg
+    cdef c_pkg.pkg_user *_user
+
+    def __cinit__(self):
+        self._user = NULL
+
+    cdef _init(self, c_pkg.pkg *pkg):
+        self._pkg = pkg
+
+    def __dealloc__(self):
+        pass
+
+    def __iter__(self):
+        return self
+
+    def __len__(self):
+        cdef unsigned i = 0
+
+        for d in self:
+            i += 1
+
+        return i
+
+    def __contains__(self, name):
+        for u in self:
+            if u.name() == name:
+                return True
+
+        return False
+
+    def __next__(self):
+        result = c_pkg.pkg_users(pkg=self._pkg, user=&self._user)
+
+        if result != c_pkg.EPKG_OK:
+            raise StopIteration
+
+        pkg_user_obj = PkgUser()
+        pkg_user_obj._init(self._user)
+
+        return pkg_user_obj
+            

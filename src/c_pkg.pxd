@@ -191,5 +191,9 @@ cdef extern from 'pkg.h':
     int pkg_licenses(const pkg *pkg, pkg_license **license)
     const char *pkg_license_name(const pkg_license *license)
     
+    int pkg_users(const pkg *pkg, pkg_user **user)
+    const char *pkg_user_name(const pkg_user *user)
+    const char *pkg_user_uidstr(const pkg_user *user)
+    
     
     

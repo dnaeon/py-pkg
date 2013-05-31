@@ -179,3 +179,8 @@ cdef class Pkg(object):
 
         return licenses_iter_obj
     
+    cpdef users(self):
+        users_iter_obj = PkgUserIter()
+        users_iter_obj._init(self._pkg)
+
+        return users_iter_obj
