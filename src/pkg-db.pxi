@@ -1,9 +1,26 @@
 
 cdef class PkgDb(object):
+    """
+    Package database
+
+    """
     cdef c_pkg.pkgdb *_db
     cdef c_pkg.pkgdb_t _db_type
     
     def __cinit__(self, remotedb=False):
+        """
+        Create a database object.
+
+        Kwargs:
+            remotedb (bool): Database mode
+
+        Returns:
+            None
+        
+        Raises:
+            IOError, PkgAlreadyInitialized, PkgNotInitialized
+
+        """
         if c_pkg.pkg_initialized() == True:
             raise PkgAlreadyInitialized, 'Already initialized'
 
@@ -21,12 +38,46 @@ cdef class PkgDb(object):
             raise IOError, 'Cannot open the package database'
 
     def __dealloc__(self):
+        """
+        Deallocate the package database object.
+
+        Close the package database and release any allocated resources.
+
+        Returns:
+            None
+
+        """
         c_pkg.pkgdb_close(self._db)
 
     cpdef close(self):
+        """
+        Close the package database.
+
+        Close the database and release any allocated resources.
+
+        Returns:
+            None
+
+        """
         c_pkg.pkgdb_close(self._db)
         
     cpdef query(self, pattern='', match_regex=False):
+        """
+        Query the local package database.
+
+        Queries the local package database and returns a package iterator.
+
+        Kwargs:
+            pattern     (str)  : Pattern to query for
+            match_regex (bool) : Treat 'pattern' as a regular expression
+
+        Returns:
+            PkgDbIter() object that is ready for iteration over the query results
+
+        Raises:
+            IOerror
+
+        """
         cdef c_pkg.pkgdb_it *it = NULL
         cdef c_pkg.match_t match = c_pkg.MATCH_EXACT
         dbiter_obj = PkgDbIter()
@@ -49,22 +100,67 @@ cdef class PkgDb(object):
         return dbiter_obj
 
 cdef class PkgDbIter(object):
+    """
+    Package database iterator
+
+    """
     cdef c_pkg.pkgdb_it *_it
     cdef unsigned _flags
 
     def __cinit__(self):
+        """
+        Create a package database iterator.
+
+        Returns:
+            None
+
+        """
         self._flags = c_pkg.PKG_LOAD_BASIC
 
     cdef _init(self, c_pkg.pkgdb_it *it):
+        """
+        Set the C pointer database iterator for the object.
+
+        Sets the database iterator attribute to the C pointer database iterator.
+
+        Kwargs:
+            it (struct pkgdb_it *): C pointer database iterator
+
+        Returns:
+            None
+
+        """
         self._it = it
         
     def __dealloc__(self):
+        """
+        Deallocate the C pointer database iterator.
+
+        Releases any resources taken by the C pointer database iterator
+
+        Returns:
+            None
+
+        """
         c_pkg.pkgdb_it_free(it=self._it)
 
     def __iter__(self):
         return self
 
     def __next__(self):
+        """
+        Return the next package from the database iterator.
+
+        Steps through the sequence of packages in the iterator
+        and returns the next one in row.
+
+        Returns:
+            Pkg() object
+
+        Raises:
+            StopIteration
+
+        """
         cdef c_pkg.pkg *pkg = NULL
         pkg_obj = Pkg()
         
@@ -79,6 +175,13 @@ cdef class PkgDbIter(object):
         return pkg_obj
 
     def __len__(self):
+        """
+        Return the number of packages in the iterator.
+
+        Returns:
+            Number of packages in the iterator
+
+        """
         cdef unsigned i = 0
 
         c_pkg.pkgdb_it_reset(it=self._it)
@@ -89,6 +192,16 @@ cdef class PkgDbIter(object):
         return i
         
     def __contains__(self, name):
+        """
+        Test if a package is contained within the database iterator
+
+        Arguments:
+            name (str): Package name or origin
+
+        Returns:
+            True if package exists, False otherwise
+
+        """
         for p in self:
             if p.name() == name or p.origin() == name:
                 return True
