@@ -175,9 +175,10 @@ cdef extern from 'pkg.h':
 
     int pkg_rdeps(const pkg *pkg, pkg_dep **dep)
 
-    int pkg_files(const pkg *pkg, pkg_file **p_file)
-    const char *pkg_file_get(pkg_file *p_file, const pkg_file_attr attr)
+    int pkg_files(const pkg *pkg, pkg_file **file)
+    const char *pkg_file_get(pkg_file *file, const pkg_file_attr attr)
     
     int pkg_dirs(const pkg *pkg, pkg_dir **dir)
     const char *pkg_dir_get(pkg_dir *dir, const pkg_dir_attr attr)
+    
     

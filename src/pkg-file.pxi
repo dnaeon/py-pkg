@@ -25,35 +25,35 @@
 #
 
 cdef class PkgFile(object):
-    cdef c_pkg.pkg_file *_p_file
+    cdef c_pkg.pkg_file *_file
 
     def __cinit__(self):
-        self._p_file = NULL
+        self._file = NULL
 
-    cdef _init(self, c_pkg.pkg_file *p_file):
-        self._p_file = p_file
+    cdef _init(self, c_pkg.pkg_file *file):
+        self._file = file
 
     def __dealloc__(self):
         pass
 
     cpdef path(self):
-        return c_pkg.pkg_file_get(p_file=self._p_file, attr=c_pkg.PKG_FILE_PATH)
+        return c_pkg.pkg_file_get(file=self._file, attr=c_pkg.PKG_FILE_PATH)
 
     cpdef cksum(self):
-        return c_pkg.pkg_file_get(p_file=self._p_file, attr=c_pkg.PKG_FILE_SUM)
+        return c_pkg.pkg_file_get(file=self._file, attr=c_pkg.PKG_FILE_SUM)
 
     cpdef uname(self):
-        return c_pkg.pkg_file_get(p_file=self._p_file, attr=c_pkg.PKG_FILE_UNAME)
+        return c_pkg.pkg_file_get(file=self._file, attr=c_pkg.PKG_FILE_UNAME)
 
     cpdef gname(self):
-        return c_pkg.pkg_file_get(p_file=self._p_file, attr=c_pkg.PKG_FILE_GNAME)
+        return c_pkg.pkg_file_get(file=self._file, attr=c_pkg.PKG_FILE_GNAME)
 
 cdef class PkgFileIter(object):
     cdef c_pkg.pkg *_pkg
-    cdef c_pkg.pkg_file *_p_file
+    cdef c_pkg.pkg_file *_file
 
     def __cinit__(self):
-        self._p_file = NULL
+        self._file = NULL
 
     cdef _init(self, c_pkg.pkg *pkg):
         self._pkg = pkg
@@ -73,13 +73,13 @@ cdef class PkgFileIter(object):
         return i
 
     def __next__(self):
-        result = c_pkg.pkg_files(pkg=self._pkg, p_file=&self._p_file)
+        result = c_pkg.pkg_files(pkg=self._pkg, file=&self._file)
 
         if result != c_pkg.EPKG_OK:
             raise StopIteration
 
         pkg_files_obj = PkgFile()
-        pkg_files_obj._init(self._p_file)
+        pkg_files_obj._init(self._file)
 
         return pkg_files_obj
 
