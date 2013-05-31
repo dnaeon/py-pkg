@@ -113,6 +113,9 @@ cdef class Pkg(object):
     cpdef digest(self):
         return self.pkg_get_attr_str(c_pkg.PKG_DIGEST)
 
+    cpdef reason(self):
+        return self.pkg_get_attr_str(c_pkg.PKG_REASON)
+        
     cpdef old_flatsize(self):
         return self.pkg_get_attr_int(c_pkg.PKG_OLD_FLATSIZE)
 

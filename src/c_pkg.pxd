@@ -115,6 +115,7 @@ cdef extern from 'pkg.h':
         PKG_REPONAME,
         PKG_REPOURL,
         PKG_DIGEST,
+        PKG_REASON,
         # end of fields
         PKG_FLATSIZE = 64,
         PKG_OLD_FLATSIZE,
