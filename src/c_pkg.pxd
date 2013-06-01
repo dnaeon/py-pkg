@@ -199,4 +199,6 @@ cdef extern from 'pkg.h':
     const char *pkg_group_name(const pkg_group *group)
     const char *pkg_group_gidstr(const pkg_group *group)
 
-
+    int pkg_shlibs_required(const pkg *pkg, pkg_shlib **shlib)
+    int pkg_shlibs_provided(const pkg *pkg, pkg_shlib **shlib)
+    const char *pkg_shlib_name(const pkg_shlib *shlib)

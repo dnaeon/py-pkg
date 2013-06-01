@@ -190,3 +190,15 @@ cdef class Pkg(object):
         groups_iter_obj._init(self._pkg)
 
         return groups_iter_obj
+
+    cpdef shlibs_required(self):
+        shlibs_required_iter_obj = PkgShlibsRequiredIter()
+        shlibs_required_iter_obj._init(self._pkg)
+
+        return shlibs_required_iter_obj
+
+    cpdef shlibs_provided(self):
+        shlibs_provided_iter_obj = PkgShlibsProvidedIter()
+        shlibs_provided_iter_obj._init(self._pkg)
+
+        return shlibs_provided_iter_obj
