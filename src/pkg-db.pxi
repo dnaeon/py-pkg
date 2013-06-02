@@ -31,6 +31,7 @@ cdef class PkgDb(object):
     """
     cdef c_pkg.pkgdb *_db
     cdef c_pkg.pkgdb_t _db_type
+    cdef c_pkg.pkg_jobs *_jobs
     
     def __cinit__(self, remotedb=False):
         """
@@ -46,6 +47,8 @@ cdef class PkgDb(object):
             IOError, PkgAlreadyInitialized, PkgNotInitialized
 
         """
+        self._jobs = NULL
+        
         if c_pkg.pkg_initialized() == True:
             raise PkgAlreadyInitialized, 'Already initialized'
 
@@ -68,12 +71,15 @@ cdef class PkgDb(object):
 
         Close the package database and release any allocated resources.
 
+        A call to the close() method must be made in order to
+        properly release any allocated resources.
+        
         Returns:
             None
 
         """
-        c_pkg.pkgdb_close(db=self._db)
-
+        pass
+        
     cpdef close(self):
         """
         Close the package database.
@@ -84,6 +90,7 @@ cdef class PkgDb(object):
             None
 
         """
+        c_pkg.pkg_jobs_free(jobs=self._jobs)
         c_pkg.pkgdb_close(self._db)
         
     cpdef query(self, pattern='', match_regex=False):
@@ -201,6 +208,7 @@ cdef class PkgDb(object):
             raise PkgJobsSolveError, 'Cannot solve package jobs'
         
         jobs_obj._init(jobs)
+        self._jobs = jobs
 
         return jobs_obj
 

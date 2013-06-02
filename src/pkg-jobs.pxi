@@ -36,7 +36,8 @@ cdef class PkgJobs(object):
         self._jobs = jobs
         
     def __dealloc__(self):
-        c_pkg.pkg_jobs_free(jobs=self._jobs)
+        # jobs are being free()'d on a database close
+        pass
 
     def __iter__(self):
         return self
