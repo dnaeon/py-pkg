@@ -72,7 +72,7 @@ cdef class PkgDb(object):
             None
 
         """
-        c_pkg.pkgdb_close(self._db)
+        c_pkg.pkgdb_close(db=self._db)
 
     cpdef close(self):
         """
@@ -145,9 +145,13 @@ cdef class PkgDb(object):
         cdef int rc = c_pkg.EPKG_OK
         cdef c_pkg.pkg_jobs *jobs = NULL
         cdef c_pkg.match_t match = c_pkg.MATCH_EXACT
-        cdef c_pkg.pkg_flags flags = c_pkg.PKG_FLAG_NONE | c_pkg.PKG_FLAG_VERSIONTEST
-        cdef unsigned mode_access  = c_pkg.PKGDB_MODE_READ | c_pkg.PKGDB_MODE_WRITE |  c_pkg.PKGDB_MODE_CREATE
-        cdef unsigned db_access    = c_pkg.PKGDB_DB_LOCAL | c_pkg.PKGDB_DB_REPO
+        cdef unsigned flags        = (c_pkg.PKG_FLAG_NONE |
+                                      c_pkg.PKG_FLAG_PKG_VERSION_TEST)
+        cdef unsigned mode_access  = (c_pkg.PKGDB_MODE_READ  | 
+                                      c_pkg.PKGDB_MODE_WRITE |
+                                      c_pkg.PKGDB_MODE_CREATE)
+        cdef unsigned db_access    = (c_pkg.PKGDB_DB_LOCAL |
+                                      c_pkg.PKGDB_DB_REPO)
         jobs_obj = PkgJobs()
 
         # check if we have enough permissions to install packages

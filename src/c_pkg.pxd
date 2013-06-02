@@ -239,7 +239,7 @@ cdef extern from 'pkg.h':
     int pkg_jobs_solve(pkg_jobs *jobs)
     int pkg_jobs_find(pkg_jobs *jobs, const char *origin, pkg **pkg)
     int pkg_jobs_set_repository(pkg_jobs *jobs, const char *name)
-    void pkg_jobs_set_flags(pkg_jobs *jobs, pkg_flags flags)
+    void pkg_jobs_set_flags(pkg_jobs *jobs, unsigned flags)
     pkg_jobs_t pkg_jobs_type(pkg_jobs *jobs)
     int pkg_jobs_next "pkg_jobs"(pkg_jobs *jobs, pkg **pkg)
     int pkg_jobs_count(pkg_jobs *jobs)
