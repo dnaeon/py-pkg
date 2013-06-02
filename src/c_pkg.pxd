@@ -56,6 +56,13 @@ cdef extern from 'pkg.h':
         PKGDB_DEFAULT = 0,
         PKGDB_REMOTE
 
+    ctypedef enum pkg_t:
+        PKG_NONE       = 0,
+        PKG_FILE       = (1 << 0),
+        PKG_REMOTE     = (1 << 1),
+        PKG_INSTALLED  = (1 << 2),
+        PKG_OLD_FILE   = (1 << 3),
+        
     ctypedef enum pkg_error_t:
         EPKG_OK = 0,
         EPKG_END,
@@ -245,3 +252,4 @@ cdef extern from 'pkg.h':
     int pkg_jobs_count(pkg_jobs *jobs)
     int pkg_jobs_apply(pkg_jobs *jobs)
     
+    pkg_t pkg_type(const pkg *pkg)
