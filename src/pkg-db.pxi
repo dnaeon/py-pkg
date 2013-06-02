@@ -26,7 +26,20 @@
 
 cdef class PkgDb(object):
     """
-    Package database
+    Create a package database object.
+
+    Used to create a new package database object, which in turn
+    exposes access to methods for manipulating the package database, e.g.
+    installing, deinstalling, upgrading, autoremoving and others.
+
+    Kwargs:
+        remotedb (bool): Database mode. If True opens the database in remote mode
+
+    Returns:
+        A new database object
+        
+    Raises:
+        IOError, PkgAlreadyInitialized, PkgNotInitialized
 
     """
     cdef c_pkg.pkgdb *_db
@@ -35,10 +48,11 @@ cdef class PkgDb(object):
     
     def __cinit__(self, remotedb=False):
         """
-        Create a database object.
+        Initializes the library and creates a new database object.
 
         Kwargs:
-            remotedb (bool): Database mode
+            remoted (bool): If True opens the database in remote mode
+
 
         Returns:
             None
@@ -47,6 +61,7 @@ cdef class PkgDb(object):
             IOError, PkgAlreadyInitialized, PkgNotInitialized
 
         """
+        cdef int rc = c_pkg.EPKG_OK
         self._jobs = NULL
         
         if c_pkg.pkg_initialized() == True:
@@ -82,9 +97,10 @@ cdef class PkgDb(object):
         
     cpdef close(self):
         """
-        Close the package database.
+        Close the package database and release any allocated resources.
 
-        Close the database and release any allocated resources.
+        Closes the database and releases any allocated resources, e.g.
+        any previously allocated jobs objects.
 
         Returns:
             None
@@ -97,10 +113,11 @@ cdef class PkgDb(object):
         """
         Query the local package database.
 
-        Queries the local package database and returns a package iterator.
+        Queries the local package database and returns a package iterator,
+        which can be used to iterate over the packages matching 'pattern'.
 
         Kwargs:
-            pattern     (str)  : Pattern to query for
+            pattern     (str)  : Pattern to query the database for
             match_regex (bool) : Treat 'pattern' as a regular expression
 
         Returns:
@@ -119,6 +136,7 @@ cdef class PkgDb(object):
         if match_regex:
             match = c_pkg.MATCH_REGEX
 
+        # if no pattern is specified return all packages in the database
         if not pattern:
             match = c_pkg.MATCH_ALL
 
@@ -133,7 +151,7 @@ cdef class PkgDb(object):
 
     cpdef install(self, pattern=None, match_regex=False):
         """
-        Query the remote database for 'pattern' and return a jobs object.
+        Query the remote database for packages for installation.
 
         Queries the remote database for 'pattern' and creates a jobs object,
         which can be used to install the packages matching the 'pattern'.
@@ -174,7 +192,7 @@ cdef class PkgDb(object):
             raise IOError, 'Cannot open the database in remote mode'
 
         if not isinstance(pattern, (list, tuple)):
-            raise TypeError, 'Pattern should of type list or tuple'
+            raise TypeError, 'Pattern should be of type list or tuple'
 
         # convert 'pattern' to a char *array[]
         cdef unsigned i
@@ -214,7 +232,7 @@ cdef class PkgDb(object):
 
     cpdef delete(self, pattern=None, match_regex=False):
         """
-        Query the local database for 'pattern' and return a jobs object.
+        Query the local database for packages for deletion.
         
         Queries the local database for 'pattern' and creates a jobs object,
         which can be used to deinstall the packages matching the 'pattern'.
@@ -285,9 +303,10 @@ cdef class PkgDb(object):
 
     cpdef autoremove(self):
         """
-        Return a PkgJobs() object with packages ready to be autoremoved.
+        Query the local database for packages marked to be autoremoved.
         
-        Queries the local database for packages ready to be autoremoved.
+        Queries the local database for packages which are marked to be
+        autoremoved and are no longer required.
         
         Returns:
             PkgJobs() object
@@ -330,9 +349,11 @@ cdef class PkgDb(object):
 
     cpdef upgrade(self):
         """
-        Return a PkgJobs() object with packages ready to be upgraded.
+        Query the remote database for packages which can be upgrade.
         
-        Queries the remote database for packages which can be upgraded.
+        Queries the remote database for packages which can be upgraded and
+        returns a PkgJobs() object which can be used to perform the actual
+        upgrade process.
         
         Returns:
             PkgJobs() object
@@ -383,7 +404,10 @@ cdef class PkgDb(object):
         
 cdef class PkgDbIter(object):
     """
-    Package database iterator
+    Package database iterator returned by querying the local database.
+
+    The PkgDbIter() is the result of a local database query operation,
+    which can be used to iterate over the packages matching the pattern.
 
     """
     cdef c_pkg.pkgdb_it *_it
@@ -397,16 +421,18 @@ cdef class PkgDbIter(object):
             None
 
         """
+        self._it = NULL
         self._flags = c_pkg.PKG_LOAD_BASIC
 
     cdef _init(self, c_pkg.pkgdb_it *it):
         """
         Set the C pointer database iterator for the object.
 
-        Sets the database iterator attribute to the C pointer database iterator.
+        Sets the database iterator attribute to the C pointer database iterator,
+        which is used to loop over the packages matching the provided pattern.
 
         Kwargs:
-            it (struct pkgdb_it *): C pointer database iterator
+            it (struct pkgdb_it *): A valid C pointer database iterator
 
         Returns:
             None
@@ -418,7 +444,7 @@ cdef class PkgDbIter(object):
         """
         Deallocate the C pointer database iterator.
 
-        Releases any resources taken by the C pointer database iterator
+        Releases any resources taken by the C pointer database iterator.
 
         Returns:
             None
@@ -433,8 +459,9 @@ cdef class PkgDbIter(object):
         """
         Return the next package from the database iterator.
 
-        Steps through the sequence of packages in the iterator
-        and returns the next one in row.
+        Steps through the sequence of packages in the iterator and
+        returns the next one in row. The database iterator is automatically
+        reset if the end of the sequence is reached.
 
         Returns:
             Pkg() object
@@ -466,6 +493,7 @@ cdef class PkgDbIter(object):
         """
         cdef unsigned i = 0
 
+        # reset the iterator before counting it's elements
         c_pkg.pkgdb_it_reset(it=self._it)
         
         for p in self:
@@ -481,7 +509,7 @@ cdef class PkgDbIter(object):
             name (str): Package name or origin
 
         Returns:
-            True if package exists, False otherwise
+            True if package is found in the iterator, False otherwise
 
         """
         for p in self:
@@ -491,44 +519,100 @@ cdef class PkgDbIter(object):
         return False
     
     cpdef load_deps(self):
+        """
+        Load package dependencies.
+
+        """
         self._flags |= c_pkg.PKG_LOAD_DEPS
 
     cpdef load_rdeps(self):
+        """
+        Load package reverse dependencies.
+
+        """
         self._flags |= c_pkg.PKG_LOAD_RDEPS
 
     cpdef load_files(self):
+        """
+        Load package files.
+
+        """
         self._flags |= c_pkg.PKG_LOAD_FILES
 
     cpdef load_scripts(self):
+        """
+        Load package scripts.
+
+        """
         self._flags |= c_pkg.PKG_LOAD_SCRIPTS
 
     cpdef load_options(self):
+        """
+        Load package options.
+
+        """
         self._flags |= c_pkg.PKG_LOAD_OPTIONS
 
     cpdef load_mtree(self):
+        """
+        Load package directory hierarchy.
+
+        """
         self._flags |= c_pkg.PKG_LOAD_MTREE
 
     cpdef load_dirs(self):
+        """
+        Load package directories.
+
+        """
         self._flags |= c_pkg.PKG_LOAD_DIRS
 
     cpdef load_categories(self):
+        """
+        Load package categories.
+
+        """
         self._flags |= c_pkg.PKG_LOAD_CATEGORIES
 
     cpdef load_licenses(self):
+        """
+        Load package licenses.
+
+        """
         self._flags |= c_pkg.PKG_LOAD_LICENSES
 
     cpdef load_users(self):
+        """
+        Load package users.
+
+        """
         self._flags |= c_pkg.PKG_LOAD_USERS
 
     cpdef load_groups(self):
+        """
+        Load package groups.
+
+        """
         self._flags |= c_pkg.PKG_LOAD_GROUPS
 
     cpdef load_shlibs_required(self):
+        """
+        Load the shared libraries required by the package.
+
+        """
         self._flags |= c_pkg.PKG_LOAD_SHLIBS_REQUIRED
 
     cpdef load_shlibs_provided(self):
+        """
+        Load the shared libraries required by the package.
+
+        """
         self._flags |= c_pkg.PKG_LOAD_SHLIBS_PROVIDED
 
     cpdef load_annotations(self):
+        """
+        Load package notes.
+
+        """
         self._flags |= c_pkg.PKG_LOAD_ANNOTATIONS
         
