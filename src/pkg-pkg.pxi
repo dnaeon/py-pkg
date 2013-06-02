@@ -44,98 +44,145 @@ cdef class Pkg(object):
     def __str__(self):
         return '%s-%s' % (self.name(), self.version())
 
-    cdef pkg_get_attr_str(self, c_pkg.pkg_attr attr):
+    cdef pkg_get_attr_str(self, c_pkg.pkg_attr attr, types):
+        if types and c_pkg.pkg_type(pkg=self._pkg) not in types:
+            raise PkgTypeError, 'Requested attribute is not applicable to the package type'
+        
         c_pkg.pkg_get(self._pkg, attr, &self._attr_str)
 
         return self._attr_str
 
-    cdef pkg_get_attr_bool(self, c_pkg.pkg_attr attr):
+    cdef pkg_get_attr_bool(self, c_pkg.pkg_attr attr, types):
+        if types and c_pkg.pkg_type(pkg=self._pkg) not in types:
+            raise PkgTypeError, 'Requested attribute is not applicable to the package type'
+            
         c_pkg.pkg_get(self._pkg, attr, &self._attr_bool)
 
         return self._attr_bool
 
-    cdef pkg_get_attr_int(self, c_pkg.pkg_attr attr):
+    cdef pkg_get_attr_int(self, c_pkg.pkg_attr attr, types):
+        if types and c_pkg.pkg_type(pkg=self._pkg) not in types:
+            raise PkgTypeError, 'Requested attribute is not applicable to the package type'
+            
         c_pkg.pkg_get(self._pkg, attr, &self._attr_int)
 
         return self._attr_int
         
     cpdef origin(self):
-        return self.pkg_get_attr_str(c_pkg.PKG_ORIGIN)
+        _pkg_type = [c_pkg.PKG_FILE, c_pkg.PKG_REMOTE, c_pkg.PKG_INSTALLED]
         
-    cpdef name(self):                                                                                                    
-        return self.pkg_get_attr_str(c_pkg.PKG_NAME)
+        return self.pkg_get_attr_str(c_pkg.PKG_ORIGIN, _pkg_type)
+        
+    cpdef name(self):
+        _pkg_type = [c_pkg.PKG_FILE, c_pkg.PKG_REMOTE, c_pkg.PKG_INSTALLED]
+        
+        return self.pkg_get_attr_str(c_pkg.PKG_NAME, _pkg_type)
 
     cpdef version(self):
-        return self.pkg_get_attr_str(c_pkg.PKG_VERSION)
+        _pkg_type = [c_pkg.PKG_FILE, c_pkg.PKG_REMOTE, c_pkg.PKG_INSTALLED]
+        
+        return self.pkg_get_attr_str(c_pkg.PKG_VERSION, _pkg_type)
 
     cpdef comment(self):
-        return self.pkg_get_attr_str(c_pkg.PKG_COMMENT)
+        _pkg_type = [c_pkg.PKG_FILE, c_pkg.PKG_REMOTE, c_pkg.PKG_INSTALLED]
+        
+        return self.pkg_get_attr_str(c_pkg.PKG_COMMENT, _pkg_type)
 
     cpdef desc(self):
-        return self.pkg_get_attr_str(c_pkg.PKG_DESC)
+        _pkg_type = [c_pkg.PKG_FILE, c_pkg.PKG_REMOTE, c_pkg.INSTALLED]
+        
+        return self.pkg_get_attr_str(c_pkg.PKG_DESC, _pkg_type)
 
     cpdef mtree(self):
-        return self.pkg_get_attr_str(c_pkg.PKG_MTREE)
+        _pkg_type = [c_pkg.PKG_FILE, c_pkg.PKG_INSTALLED]
+        
+        return self.pkg_get_attr_str(c_pkg.PKG_MTREE, _pkg_type)
 
     cpdef message(self):
-        return self.pkg_get_attr_str(c_pkg.PKG_MESSAGE)
+        _pkg_type = [c_pkg.PKG_FILE, c_pkg.PKG_INSTALLED]
+        
+        return self.pkg_get_attr_str(c_pkg.PKG_MESSAGE, _pkg_type)
 
     cpdef arch(self):
-        return self.pkg_get_attr_str(c_pkg.PKG_ARCH)
+        _pkg_type = [c_pkg.PKG_FILE, c_pkg.PKG_REMOTE, c_pkg.INSTALLED]
+        
+        return self.pkg_get_attr_str(c_pkg.PKG_ARCH, _pkg_type)
 
     cpdef maintainer(self):
-        return self.pkg_get_attr_str(c_pkg.PKG_MAINTAINER)
+        _pkg_type = [c_pkg.PKG_FILE, c_pkg.PKG_REMOTE, c_pkg.PKG_INSTALLED]
+        
+        return self.pkg_get_attr_str(c_pkg.PKG_MAINTAINER, _pkg_type)
 
     cpdef www(self):
-        return self.pkg_get_attr_str(c_pkg.PKG_WWW)
+        _pkg_type = [c_pkg.PKG_FILE, c_pkg.PKG_REMOTE, c_pkg.INSTALLED]
+        
+        return self.pkg_get_attr_str(c_pkg.PKG_WWW, _pkg_type)
 
     cpdef prefix(self):
-        return self.pkg_get_attr_str(c_pkg.PKG_PREFIX)
+        _pkg_type = [c_pkg.PKG_FILE, c_pkg.PKG_REMOTE, c_pkg.PKG_INSTALLED]
+        
+        return self.pkg_get_attr_str(c_pkg.PKG_PREFIX, _pkg_type)
 
     cpdef infos(self):
-        return self.pkg_get_attr_str(c_pkg.PKG_INFOS)
+        _pkg_type = [c_pkg.PKG_FILE, c_pkg.PKG_REMOTE, c_pkg.PKG_INSTALLED]
+        
+        return self.pkg_get_attr_str(c_pkg.PKG_INFOS, _pkg_type)
 
     cpdef repopath(self):
-        return self.pkg_get_attr_str(c_pkg.PKG_REPOPATH)
+        _pkg_type = [c_pkg.PKG_REMOTE]
+        
+        return self.pkg_get_attr_str(c_pkg.PKG_REPOPATH, _pkg_type)
 
     cpdef cksum(self):
-        return self.pkg_get_attr_str(c_pkg.PKG_CKSUM)
+        _pkg_type = [c_pkg.PKG_REMOTE]
+        
+        return self.pkg_get_attr_str(c_pkg.PKG_CKSUM, _pkg_type)
 
     cpdef old_version(self):
-        return self.pkg_get_attr_str(c_pkg.PKG_OLD_VERSION)
+        _pkg_type = [c_pkg.PKG_REMOTE]
+        
+        return self.pkg_get_attr_str(c_pkg.PKG_OLD_VERSION, _pkg_type)
 
     cpdef reponame(self):
-        return self.pkg_get_attr_str(c_pkg.PKG_REPONAME)
+        _pkg_type = [c_pkg.PKG_REMOTE]
+        
+        return self.pkg_get_attr_str(c_pkg.PKG_REPONAME, _pkg_type)
 
     cpdef repourl(self):
-        return self.pkg_get_attr_str(c_pkg.PKG_REPOURL)
+        _pkg_type = [c_pkg.PKG_REMOTE]
+        
+        return self.pkg_get_attr_str(c_pkg.PKG_REPOURL, _pkg_type)
 
     cpdef digest(self):
-        return self.pkg_get_attr_str(c_pkg.PKG_DIGEST)
+        _pkg_type = [c_pkg.PKG_REMOTE]
+        
+        return self.pkg_get_attr_str(c_pkg.PKG_DIGEST, _pkg_type)
 
     cpdef reason(self):
-        return self.pkg_get_attr_str(c_pkg.PKG_REASON)
+        _pkg_type = [c_pkg.PKG_REMOTE]
+        
+        return self.pkg_get_attr_str(c_pkg.PKG_REASON, _pkg_type)
         
     cpdef old_flatsize(self):
-        return self.pkg_get_attr_int(c_pkg.PKG_OLD_FLATSIZE)
+        return self.pkg_get_attr_int(c_pkg.PKG_OLD_FLATSIZE, None)
 
     cpdef size(self):
-        return self.pkg_get_attr_int(c_pkg.PKG_PKGSIZE)
+        return self.pkg_get_attr_int(c_pkg.PKG_FLATSIZE, None)
 
     cpdef license_logic(self):
-        return self.pkg_get_attr_int(c_pkg.PKG_LICENSE_LOGIC)
+        return self.pkg_get_attr_int(c_pkg.PKG_LICENSE_LOGIC, None)
 
     cpdef automatic(self):
-        return self.pkg_get_attr_bool(c_pkg.PKG_AUTOMATIC)
+        return self.pkg_get_attr_bool(c_pkg.PKG_AUTOMATIC, None)
 
     cpdef locked(self):
-        return self.pkg_get_attr_bool(c_pkg.PKG_AUTOMATIC)
+        return self.pkg_get_attr_bool(c_pkg.PKG_LOCKED, None)
 
     cpdef rowid(self):
-        return self.pkg_get_attr_int(c_pkg.PKG_ROWID)
+        return self.pkg_get_attr_int(c_pkg.PKG_ROWID, None)
 
     cpdef time(self):
-        return self.pkg_get_attr_int(c_pkg.PKG_TIME)
+        return self.pkg_get_attr_int(c_pkg.PKG_TIME, None)
 
     cpdef deps(self):
         deps_iter_obj = PkgDepIter()

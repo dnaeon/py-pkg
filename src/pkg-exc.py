@@ -41,3 +41,7 @@ class PkgJobsApplyError(Exception):
 
 class PkgAccessError(Exception):
     pass
+
+class PkgTypeError(Exception):
+    pass
+
