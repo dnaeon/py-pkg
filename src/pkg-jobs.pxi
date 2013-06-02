@@ -24,20 +24,48 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-class PkgAlreadyInitialized(Exception):
-    pass
-
-class PkgNotInitialized(Exception):
-    pass
-
-class PkgJobsAddError(Exception):
-    pass
+cdef class PkgJobs(object):
+    cdef c_pkg.pkg *_pkg
+    cdef c_pkg.pkg_jobs *_jobs
     
-class PkgJobsSolveError(Exception):
-    pass
-    
-class PkgJobsApplyError(Exception):
-    pass
+    def __cinit__(self):
+        self._pkg = NULL
+        self._jobs = NULL
 
-class PkgAccessError(Exception):
-    pass
+    cdef _init(self, c_pkg.pkg_jobs *jobs):
+        self._jobs = jobs
+        
+    def __dealloc__(self):
+        c_pkg.pkg_jobs_free(jobs=self._jobs)
+
+    def __iter__(self):
+        return self
+
+    def __len__(self):
+        return c_pkg.pkg_jobs_count(jobs=self._jobs)
+
+    def __contains__(self, name):
+        for p in self:
+            if p.name() == name or p.origin() == name:
+                return True
+
+        return False
+
+    def __next__(self):
+        result = c_pkg.pkg_jobs_next(jobs=self._jobs, pkg=&self._pkg)
+
+        if result != c_pkg.EPKG_OK:
+            raise StopIteration
+
+        pkg_obj = Pkg()
+        pkg_obj._init(self._pkg)
+
+        return pkg_obj
+
+    cpdef apply(self):
+        # TODO: Check if we have any jobs to apply at all
+            
+        result = c_pkg.pkg_jobs_apply(jobs=self._jobs)
+
+        if result != c_pkg.EPKG_OK:
+            raise PkgJobsApplyError, 'Cannot apply jobs'

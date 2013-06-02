@@ -146,6 +146,34 @@ cdef extern from 'pkg.h':
         PKG_DIR_PATH = 0,
         PKG_DIR_UNAME,
         PKG_DIR_GNAME,
+
+    ctypedef enum pkg_jobs_t:
+        PKG_JOBS_INSTALL = 0,
+        PKG_JOBS_DEINSTALL,
+        PKG_JOBS_FETCH,
+        PKG_JOBS_AUTOREMOVE,
+        PKG_JOBS_UPGRADE,
+
+    ctypedef enum pkg_flags:
+        PKG_FLAG_NONE                   = 0,
+        PKG_FLAG_DRY_RUN                = (1 << 0),
+        PKG_FLAG_FORCE                  = (1 << 1),
+        PKG_FLAG_RECURSIVE              = (1 << 2),
+        PKG_FLAG_AUTOMATIC              = (1 << 3),
+        PKG_FLAG_WITH_DEPS              = (1 << 4),
+        PKG_FLAG_NOSCRIPT               = (1 << 5),
+        PKG_FLAG_PKG_VERSION_TEST       = (1 << 6),
+        PKG_FLAG_UPGRADES_FOR_INSTALLED = (1 << 7),
+        PKG_FLAG_SKIP_INSTALL           = (1 << 8)
+
+    ctypedef enum pkgdb_access_perm_t:
+        PKGDB_MODE_READ   = (0x1<<0),
+        PKGDB_MODE_WRITE  = (0x1<<1),
+        PKGDB_MODE_CREATE = (0x1<<2)
+
+    ctypedef enum pkgdb_access_db_t:
+        PKGDB_DB_LOCAL    = (0x1<<0),
+        PKGDB_DB_REPO     = (0x1<<1)
     
     int pkg_init(const char *path)
     int pkg_initialized()
@@ -156,6 +184,8 @@ cdef extern from 'pkg.h':
 
     void  pkgdb_close(pkgdb *db)
 
+    int pkgdb_access(unsigned mode, unsigned database)
+    
     pkgdb_it *pkgdb_query(pkgdb *db,
                           const char *pattern,
                           match_t match)
@@ -202,3 +232,16 @@ cdef extern from 'pkg.h':
     int pkg_shlibs_required(const pkg *pkg, pkg_shlib **shlib)
     int pkg_shlibs_provided(const pkg *pkg, pkg_shlib **shlib)
     const char *pkg_shlib_name(const pkg_shlib *shlib)
+
+    int pkg_jobs_new(pkg_jobs **jobs, pkg_jobs_t type, pkgdb *db)
+    void pkg_jobs_free(pkg_jobs *jobs)
+    int pkg_jobs_add(pkg_jobs *jobs, match_t match, char **argv, int argc)
+    int pkg_jobs_solve(pkg_jobs *jobs)
+    int pkg_jobs_find(pkg_jobs *jobs, const char *origin, pkg **pkg)
+    int pkg_jobs_set_repository(pkg_jobs *jobs, const char *name)
+    void pkg_jobs_set_flags(pkg_jobs *jobs, pkg_flags flags)
+    pkg_jobs_t pkg_jobs_type(pkg_jobs *jobs)
+    int pkg_jobs_next "pkg_jobs"(pkg_jobs *jobs, pkg **pkg)
+    int pkg_jobs_count(pkg_jobs *jobs)
+    int pkg_jobs_apply(pkg_jobs *jobs)
+    

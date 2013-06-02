@@ -30,15 +30,15 @@ cdef class Pkg(object):
     cdef bint _attr_bool
     cdef unsigned int _attr_int
 
-    def __cinit__(self):                                                                                            
+    def __cinit__(self):
         self._attr_str = NULL
         self._attr_bool = False
         self._attr_int = 0
-
+        
     cdef _init(self, c_pkg.pkg *pkg):
         self._pkg = pkg
         
-    def __dealloc__(self):                                                                                               
+    def __dealloc__(self):
         c_pkg.pkg_free(pkg=self._pkg)
 
     def __str__(self):
