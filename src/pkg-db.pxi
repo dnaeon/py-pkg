@@ -293,7 +293,7 @@ cdef class PkgDb(object):
             PkgJobs() object
 
         Raises:
-            MemoryError, PkgJobsAddError, PkgJobsSolveError, PkgAccessError
+            MemoryError, PkgJobsSolveError, PkgAccessError
         
         """
         cdef int rc = c_pkg.EPKG_OK
@@ -323,6 +323,59 @@ cdef class PkgDb(object):
         if rc != c_pkg.EPKG_OK:
             raise PkgJobsSolveError, 'Cannot solve package jobs'
         
+        jobs_obj._init(jobs)
+        self._jobs = jobs
+        
+        return jobs_obj
+
+    cpdef upgrade(self):
+        """
+        Return a PkgJobs() object with packages ready to be upgraded.
+        
+        Queries the remote database for packages which can be upgraded.
+        
+        Returns:
+            PkgJobs() object
+        
+        Raises:
+            MemoryError, PkgJobsSolveError, PkgAccessError
+        
+        """
+        cdef int rc = c_pkg.EPKG_OK
+        cdef c_pkg.pkg_jobs *jobs = NULL
+        cdef unsigned flags        = c_pkg.PKG_FLAG_NONE | c_pkg.PKG_FLAG_PKG_VERSION_TEST
+        cdef unsigned mode_access  = (c_pkg.PKGDB_MODE_READ  |
+                                      c_pkg.PKGDB_MODE_WRITE |
+                                      c_pkg.PKGDB_MODE_CREATE)
+        cdef unsigned db_access    = c_pkg.PKGDB_DB_LOCAL | c_pkg.PKGDB_DB_REPO
+        jobs_obj = PkgJobs()
+        
+        # check if we have enough permissions to upgrade packages
+        rc = c_pkg.pkgdb_access(mode=mode_access, database=db_access)
+
+        if rc != c_pkg.EPKG_OK:
+            raise PkgAccessError, 'Insufficient permissions to upgrade packages'
+
+        # re-open the database in remote mode if needed
+        rc = c_pkg.pkgdb_open(db=&self._db, db_type=c_pkg.PKGDB_REMOTE)
+
+        if rc != c_pkg.EPKG_OK:
+            raise IOError, 'Cannot open the database in remote mode'
+            
+        # TODO: Implement setting the rest of the pkg_flags types
+
+        rc = c_pkg.pkg_jobs_new(jobs=&jobs, type=c_pkg.PKG_JOBS_UPGRADE, db=self._db)
+        
+        if rc != c_pkg.EPKG_OK:
+            raise MemoryError, 'Cannot create a jobs object'
+            
+        c_pkg.pkg_jobs_set_flags(jobs=jobs, flags=flags)
+        
+        rc = c_pkg.pkg_jobs_solve(jobs=jobs)
+        
+        if rc != c_pkg.EPKG_OK:
+            raise PkgJobsSolveError, 'Cannot solve package jobs'
+            
         jobs_obj._init(jobs)
         self._jobs = jobs
         
