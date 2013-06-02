@@ -212,6 +212,77 @@ cdef class PkgDb(object):
 
         return jobs_obj
 
+    cpdef delete(self, pattern=None, match_regex=False):
+        """
+        Query the local database for 'pattern' and return a jobs object.
+        
+        Queries the local database for 'pattern' and creates a jobs object,
+        which can be used to deinstall the packages matching the 'pattern'.
+        
+        Kwargs:
+            pattern     (list): Pattern to query the local database for
+            match_regex (bool): If True treat 'pattern' as a regular expression
+        
+        Returns:
+            PkgJobs() object
+        
+        Raises:
+            MemoryError, PkgJobsAddError, PkgJobsSolveError, PkgAccessError
+        
+        """
+        cdef int rc = c_pkg.EPKG_OK
+        cdef c_pkg.pkg_jobs *jobs = NULL
+        cdef c_pkg.match_t match = c_pkg.MATCH_EXACT
+        cdef unsigned flags        = c_pkg.PKG_FLAG_NONE
+        cdef unsigned mode_access  = c_pkg.PKGDB_MODE_READ | c_pkg.PKGDB_MODE_WRITE
+        cdef unsigned db_access    = c_pkg.PKGDB_DB_LOCAL
+        jobs_obj = PkgJobs()
+
+        # check if we have enough permissions to deinstall packages
+        rc = c_pkg.pkgdb_access(mode=mode_access, database=db_access)
+        
+        if rc != c_pkg.EPKG_OK:
+            raise PkgAccessError, 'Insufficient permissions to deinstall packages'
+            
+        if not isinstance(pattern, (list, tuple)):
+            raise TypeError, 'Pattern should of type list or tuple'
+            
+        # convert 'pattern' to a char *array[]
+        cdef unsigned i
+        cdef unsigned num_pkgs = len(pattern)
+        cdef char **pkgs = []
+        
+        for i in xrange(num_pkgs):
+            pkgs[i] = pattern[i]
+
+        # TODO: Implement the rest of the match_t types
+        if match_regex:
+            match = c_pkg.MATCH_REGEX
+
+        # TODO: Implement setting the rest of the pkg_flags types
+        
+        rc = c_pkg.pkg_jobs_new(jobs=&jobs, type=c_pkg.PKG_JOBS_DEINSTALL, db=self._db)
+        
+        if rc != c_pkg.EPKG_OK:
+            raise MemoryError, 'Cannot create a jobs object'
+            
+        c_pkg.pkg_jobs_set_flags(jobs=jobs, flags=flags)
+    
+        rc = c_pkg.pkg_jobs_add(jobs=jobs, match=match, argv=pkgs, argc=num_pkgs)
+
+        if rc != c_pkg.EPKG_OK:
+            raise PkgJobsAddError, 'Cannot add package jobs'
+            
+        rc = c_pkg.pkg_jobs_solve(jobs=jobs)
+        
+        if rc != c_pkg.EPKG_OK:
+            raise PkgJobsSolveError, 'Cannot solve package jobs'
+        
+        jobs_obj._init(jobs)
+        self._jobs = jobs
+
+        return jobs_obj
+            
 cdef class PkgDbIter(object):
     """
     Package database iterator
