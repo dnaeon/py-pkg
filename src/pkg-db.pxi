@@ -282,7 +282,52 @@ cdef class PkgDb(object):
         self._jobs = jobs
 
         return jobs_obj
+
+    cpdef autoremove(self):
+        """
+        Return a PkgJobs() object with packages ready to be autoremoved.
+        
+        Queries the local database for packages ready to be autoremoved.
+        
+        Returns:
+            PkgJobs() object
+
+        Raises:
+            MemoryError, PkgJobsAddError, PkgJobsSolveError, PkgAccessError
+        
+        """
+        cdef int rc = c_pkg.EPKG_OK
+        cdef c_pkg.pkg_jobs *jobs = NULL
+        cdef unsigned flags        = c_pkg.PKG_FLAG_FORCE
+        cdef unsigned mode_access  = c_pkg.PKGDB_MODE_READ | c_pkg.PKGDB_MODE_WRITE
+        cdef unsigned db_access    = c_pkg.PKGDB_DB_LOCAL
+        jobs_obj = PkgJobs()
+
+        # check if we have enough permissions to autoremove packages
+        rc = c_pkg.pkgdb_access(mode=mode_access, database=db_access)
+        
+        if rc != c_pkg.EPKG_OK:
+            raise PkgAccessError, 'Insufficient permissions to autoremove packages'
             
+        # TODO: Implement setting the rest of the pkg_flags types
+    
+        rc = c_pkg.pkg_jobs_new(jobs=&jobs, type=c_pkg.PKG_JOBS_AUTOREMOVE, db=self._db)
+
+        if rc != c_pkg.EPKG_OK:
+            raise MemoryError, 'Cannot create a jobs object'
+
+        c_pkg.pkg_jobs_set_flags(jobs=jobs, flags=flags)
+        
+        rc = c_pkg.pkg_jobs_solve(jobs=jobs)
+        
+        if rc != c_pkg.EPKG_OK:
+            raise PkgJobsSolveError, 'Cannot solve package jobs'
+        
+        jobs_obj._init(jobs)
+        self._jobs = jobs
+        
+        return jobs_obj
+        
 cdef class PkgDbIter(object):
     """
     Package database iterator
