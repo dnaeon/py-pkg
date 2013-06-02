@@ -64,7 +64,8 @@ cdef class PkgJobs(object):
         return pkg_obj
 
     cpdef apply(self):
-        # TODO: Check if we have any jobs to apply at all
+        if len(self) == 0:
+            return
             
         result = c_pkg.pkg_jobs_apply(jobs=self._jobs)
 
