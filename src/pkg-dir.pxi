@@ -25,44 +25,99 @@
 #
 
 cdef class PkgDir(object):
+    """
+    Package directory object.
+
+    Provides methods for accessing package directory attributes.
+
+    """
     cdef c_pkg.pkg_dir *_dir
 
     def __cinit__(self):
+        """
+        Initializes a new package directory object.
+
+        """
         self._dir = NULL
 
     cdef _init(self, c_pkg.pkg_dir *dir):
+        """
+        Sets the C pointer of a package directory object.
+
+        """
         self._dir = dir
 
     def __dealloc__(self):
+        """
+        Release any previously allocated resources.
+
+        """
         pass
 
     cpdef path(self):
+        """
+        Retrieve the path of a package directory object.
+
+        Returns:
+            A string object representing the path to the package directory
+
+        """
         return c_pkg.pkg_dir_get(dir=self._dir, attr=c_pkg.PKG_DIR_PATH)
 
     cpdef uname(self):
+        """
+        TODO: Document this method.
+
+        """
         return c_pkg.pkg_dir_get(dir=self._dir, attr=c_pkg.PKG_DIR_UNAME)
 
     cpdef gname(self):
+        """
+        TODO: Document this method.
+
+        """
         return c_pkg.pkg_dir_get(dir=self._dir, attr=c_pkg.PKG_DIR_GNAME)
 
 cdef class PkgDirIter(object):
+    """
+    Package database iterator object.
+
+    Provides methods for iterating over the directories provided by a package.
+
+    """
     cdef c_pkg.pkg *_pkg
     cdef c_pkg.pkg_dir *_dir
 
     def __cinit__(self):
+        """
+        Initializes a new iterator object.
+
+        """
         self._pkg = NULL
         self._dir = NULL
 
     cdef _init(self, c_pkg.pkg *pkg):
+        """
+        Sets the C pointer of the package we iterate it's directories over.
+
+        """
         self._pkg = pkg
 
     def __dealloc__(self):
+        """
+        Release any previously allocated resources.
+
+        """
         pass
 
     def __iter__(self):
         return self
 
     def __len__(self):
+        """
+        Return the number of directories provided by a package.
+
+        """
         cdef unsigned i = 0
 
         for d in self:
@@ -71,6 +126,13 @@ cdef class PkgDirIter(object):
         return i
 
     def __next__(self):
+        """
+        Return the next package directory.
+
+        Returns:
+            PkgDir() object
+
+        """
         result = c_pkg.pkg_dirs(pkg=self._pkg, dir=&self._dir)
 
         if result != c_pkg.EPKG_OK:
@@ -82,6 +144,13 @@ cdef class PkgDirIter(object):
         return pkg_dirs_obj
 
     def __contains__(self, path):
+        """
+        Test if a package provides a directory.
+
+        Returns:
+            True if the package provides the directory, False otherwise.
+
+        """
         for d in self:
             if d.path() == path:
                 return True
