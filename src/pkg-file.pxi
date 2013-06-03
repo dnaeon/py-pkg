@@ -25,46 +25,117 @@
 #
 
 cdef class PkgFile(object):
+    """
+    Package file object.
+
+    Provides methods for access attributes of files
+    provided by a package.
+
+    """
     cdef c_pkg.pkg_file *_file
 
     def __cinit__(self):
+        """
+        Initiliazes a new package file object.
+
+        """
         self._file = NULL
 
     cdef _init(self, c_pkg.pkg_file *file):
+        """
+        Sets the C pointer of a package file object.
+
+        """
         self._file = file
 
     def __dealloc__(self):
+        """
+        Release any previously allocated resources.
+
+        Releases any previously allocated resources of
+        the package file object.
+
+        """
         pass
 
     cpdef path(self):
+        """
+        Retrieve the path of a file provided by a package.
+
+        Returns:
+            A string object representing the path of the package file.
+
+        """
         return c_pkg.pkg_file_get(file=self._file, attr=c_pkg.PKG_FILE_PATH)
 
     cpdef cksum(self):
+        """
+        Retrieve the package file checksum.
+
+        Retrieves and returns the package file checksum.
+
+        Returns:
+            A string object representing the checksum of the package file
+
+        """
         return c_pkg.pkg_file_get(file=self._file, attr=c_pkg.PKG_FILE_SUM)
 
     cpdef uname(self):
+        """
+        TODO: Document this method
+
+        """
         return c_pkg.pkg_file_get(file=self._file, attr=c_pkg.PKG_FILE_UNAME)
 
     cpdef gname(self):
+        """
+        TODO: Document this method
+
+        """
         return c_pkg.pkg_file_get(file=self._file, attr=c_pkg.PKG_FILE_GNAME)
 
 cdef class PkgFileIter(object):
+    """
+    Package file iterator object.
+
+    Provides a mechanism for iterating over the files of a package.
+
+    """
     cdef c_pkg.pkg *_pkg
     cdef c_pkg.pkg_file *_file
 
     def __cinit__(self):
+        """
+        Initialize the file iterator.
+
+        """
         self._file = NULL
 
     cdef _init(self, c_pkg.pkg *pkg):
+        """
+        Sets the C ponter of the package object.
+
+        """
         self._pkg = pkg
 
     def __dealloc__(self):
+        """
+        Release any previously allocated resources.
+
+        """
         pass
 
     def __iter__(self):
         return self
 
     def __len__(self):
+        """
+        Return the number of files provided by a package.
+
+        Returns:
+            Integer object representing the number of files provided by a package
+
+        """
         cdef unsigned i = 0
 
         for d in self:
@@ -73,6 +144,13 @@ cdef class PkgFileIter(object):
         return i
 
     def __next__(self):
+        """
+        Return the next package file.
+
+        Returns:
+            PkgFile() object
+
+        """
         result = c_pkg.pkg_files(pkg=self._pkg, file=&self._file)
 
         if result != c_pkg.EPKG_OK:
@@ -84,6 +162,16 @@ cdef class PkgFileIter(object):
         return pkg_files_obj
 
     def __contains__(self, path):
+        """
+        Test if a file is provided by a package.
+
+        Args:
+            path (str): Path to the file
+
+        Returns:
+            True if the package provides the file, False otherwise
+
+        """
         for f in self:
             if f.path() == path:
                 return True
