@@ -5,7 +5,7 @@ from distutils.extension import Extension
 from Cython.Distutils import build_ext
 
 setup(name='pkg',
-      version='0.0.1',
+      version='0.1.0',
       description='Python wrappers for libpkg',
       author='Marin Atanasov Nikolov',
       author_email='dnaeon@gmail.com',
