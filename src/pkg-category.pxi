@@ -25,40 +25,94 @@
 #
 
 cdef class PkgCategory(object):
+    """
+    Package category object.
+
+    Provides methods for access to package categories.
+
+    """
     cdef c_pkg.pkg_category *_category
 
     def __cinit__(self):
+        """
+        Initiliaze a new package category object.
+
+        """
         self._category = NULL
 
     cdef _init(self, c_pkg.pkg_category *category):
+        """
+        Sets the C pointer of a package category.
+
+        """
         self._category = category
 
     def __dealloc__(self):
+        """
+        Release any previously allocated resources.
+
+        """
         pass
 
     def __str__(self):
+        """
+        String representation of a package category.
+
+        Returns:
+            A string object representing the category name
+
+        """
         return '%s' % self.name()
         
     cpdef name(self):
+        """
+        Retrieve package category name.
+
+        Returns:
+            A string object representing the category name.
+
+        """
         return c_pkg.pkg_category_name(category=self._category)
 
 cdef class PkgCategoryIter(object):
+    """
+    Package category iterator object.
+
+    Provides methods for iterating over the package categories.
+
+    """
     cdef c_pkg.pkg *_pkg
     cdef c_pkg.pkg_category *_category
 
     def __cinit__(self):
+        """
+        Initialize a new package category iterator object.
+
+        """
         self._category = NULL
 
     cdef _init(self, c_pkg.pkg *pkg):
+        """
+        Set the C pointer of the package we iterate over.
+
+        """
         self._pkg = pkg
 
     def __dealloc__(self):
+        """
+        Release any previously allocated resources.
+
+        """
         pass
 
     def __iter__(self):
         return self
 
     def __len__(self):
+        """
+        Return the number of categories the package is in.
+
+        """
         cdef unsigned i = 0
 
         for c in self:
@@ -67,6 +121,13 @@ cdef class PkgCategoryIter(object):
         return i
 
     def __contains__(self, name):
+        """
+        Test if a package is in a category.
+
+        Returns:
+            True if the package is in the category, False otherwise.
+
+        """
         for c in self:
             if c.name() == name:
                 return True
@@ -74,6 +135,13 @@ cdef class PkgCategoryIter(object):
         return False
 
     def __next__(self):
+        """
+        Return the next category of the package.
+
+        Returns:
+            PkgCategory() object
+
+        """
         result = c_pkg.pkg_categories(pkg=self._pkg, category=&self._category)
 
         if result != c_pkg.EPKG_OK:
