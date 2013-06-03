@@ -441,87 +441,254 @@ cdef class Pkg(object):
         return self.pkg_get_attr_str(c_pkg.PKG_REASON, _pkg_type)
         
     cpdef old_flatsize(self):
+        """
+        Retrieve the package old flatsize.
+        
+        Retrieves and returns the package old flatsize, e.g.
+        previous flatsize of a package before attempting an upgrade.
+        
+        Returns:
+            Integer object representing the old package flatsize
+
+        """
         return self.pkg_get_attr_int(c_pkg.PKG_OLD_FLATSIZE, None)
 
     cpdef size(self):
+        """
+        Retrieve the package old size.
+        
+        Retrieves and returns the package size.
+        
+        Returns:
+            Integer object representing the package size
+        
+        """
         return self.pkg_get_attr_int(c_pkg.PKG_FLATSIZE, None)
 
     cpdef license_logic(self):
+        """
+        Retrieve the package license logic.
+        
+        Retrieves and returns the package license logic.
+        
+        Returns:
+            Integer object representing the license logic.
+        
+        """
         return self.pkg_get_attr_int(c_pkg.PKG_LICENSE_LOGIC, None)
 
     cpdef automatic(self):
+        """
+        Check if a package is marked as automatic.
+        
+        Checks if a package is marked as automatic, and thus
+        can be autoremoved.
+        
+        Returns:
+            True if package is automatic, False otherwise.
+        
+        """
         return self.pkg_get_attr_bool(c_pkg.PKG_AUTOMATIC, None)
 
     cpdef locked(self):
+        """
+        Check if a package is locked.
+        
+        Locking of packages prevents against reinstallation, modification or
+        deletion of the package. 
+        
+        Returns:
+            True if package is locked, False otherwise.
+        
+        """
         return self.pkg_get_attr_bool(c_pkg.PKG_LOCKED, None)
 
     cpdef rowid(self):
+        """
+        Retrieve the package row id from the database.
+        
+        Retrieve and return the package row id from the package database.
+        
+        Returns:
+            Integer object representing the package row id.
+        
+        """
         return self.pkg_get_attr_int(c_pkg.PKG_ROWID, None)
 
     cpdef time(self):
+        """
+        Retrieve the package installation time.
+
+        Retrieve and return the time a package has been installed.
+
+        Returns:
+            Time the package has been installed in seconds since the Epoch.
+
+        """
         return self.pkg_get_attr_int(c_pkg.PKG_TIME, None)
 
     cpdef deps(self):
+        """
+        Iterate over the package dependencies.
+        
+        Creates an iterator that loops over the package dependencies.
+        
+        Returns:
+            A PkgDepIter() object suitable for iterating over the package dependencies.
+        
+        """
         deps_iter_obj = PkgDepIter()
         deps_iter_obj._init(self._pkg)
 
         return deps_iter_obj
 
     cpdef rdeps(self):
+        """
+        Iterate over the reverse package dependencies.
+        
+        Creates an iterator that loops over the reverse package dependencies.
+        
+        Returns:
+            A PkgRDepIter() object suitable for iterating over the reverse package dependencies.
+    
+        """
         rdeps_iter_obj = PkgRdepIter()
         rdeps_iter_obj._init(self._pkg)
 
         return rdeps_iter_obj
 
     cpdef files(self):
+        """
+        Iterate over the package files.
+        
+        Creates an iterator that loops over the files provided by a package.
+        
+        Returns:
+            A PkgFileIter() object suitable for iterating over the package files.
+        
+        """
         files_iter_obj = PkgFileIter()
         files_iter_obj._init(self._pkg)
 
         return files_iter_obj
 
     cpdef dirs(self):
+        """
+        Iterate over the package directories.
+        
+        Creates an iterator that loops over the directories provided by a package.
+        
+        Returns:
+            A PkgDirIter() object suitable for iterating over the package directories.
+        
+        """
         dirs_iter_obj = PkgDirIter()
         dirs_iter_obj._init(self._pkg)
 
         return dirs_iter_obj
 
     cpdef categories(self):
+        """
+        Iterate over the package categories.
+        
+        Creates an iterator that loops over the package categories.
+        
+        Returns:
+            A PkgCategoryIter() object suitable for iterating over the package categories.
+    
+        """
         categories_iter_obj = PkgCategoryIter()
         categories_iter_obj._init(self._pkg)
 
         return categories_iter_obj
 
     cpdef options(self):
+        """
+        Iterate over the package options.
+        
+        Creates an iterator that loops over the package options.
+        
+        Returns:
+            A PkgOptionIter() object suitable for iterating over the package options.
+        
+        """
         options_iter_obj = PkgOptionIter()
         options_iter_obj._init(self._pkg)
 
         return options_iter_obj
 
     cpdef licenses(self):
+        """
+        Iterate over the package licenses.
+        
+        Creates an iterator that loops over the package licenses.
+
+        Returns:
+        A PkgLicenseIter() object suitable for iterating over the package licenses.
+        
+        """
         licenses_iter_obj = PkgLicenseIter()
         licenses_iter_obj._init(self._pkg)
 
         return licenses_iter_obj
     
     cpdef users(self):
+        """
+        Iterate over the package users.
+
+        Creates an iterator that loops over the users created/needed by the package.
+
+        Returns:
+        A PkgUserIter() object suitable for iterating over the package users.
+        
+        """
         users_iter_obj = PkgUserIter()
         users_iter_obj._init(self._pkg)
 
         return users_iter_obj
 
     cpdef groups(self):
+        """
+        Iterate over the package groups.
+        
+        Creates an iterator that loops over the groups created/needed by the package.
+        
+        Returns:
+            A PkgGroupIter() object suitable for iterating over the package users.
+        
+        """
         groups_iter_obj = PkgGroupIter()
         groups_iter_obj._init(self._pkg)
 
         return groups_iter_obj
 
     cpdef shlibs_required(self):
+        """
+        Iterate over the required shared libraries of a package.
+        
+        Creates an iterator that loops over the required shared libraries of a package.
+        
+        Returns:
+            A PkgShlibsRequiredIter() object suitable for iterating over the required
+            shared libraries of the package.
+        
+        """
         shlibs_required_iter_obj = PkgShlibsRequiredIter()
         shlibs_required_iter_obj._init(self._pkg)
 
         return shlibs_required_iter_obj
 
     cpdef shlibs_provided(self):
+        """
+        Iterate over the provided shared libraries by a package.
+        
+        Creates an iterator that loops over the shared libraries provided by a package.
+        
+        Returns:
+            A PkgShlibsProvidedIter() object suitable for iterating over the
+            shared libraries provided by the package.
+        
+        """
         shlibs_provided_iter_obj = PkgShlibsProvidedIter()
         shlibs_provided_iter_obj._init(self._pkg)
 
