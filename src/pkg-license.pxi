@@ -25,40 +25,94 @@
 #
 
 cdef class PkgLicense(object):
+    """
+    Package license object
+
+    Provides methods for access various package license attributes.
+
+    """
     cdef c_pkg.pkg_license *_license
 
     def __cinit__(self):
+        """
+        Initiliaze a new package license object.
+
+        """
         self._license = NULL
 
     cdef _init(self, c_pkg.pkg_license *license):
+        """
+        Set the C pointer of the package license object.
+
+        """
         self._license = license
 
     def __dealloc__(self):
+        """
+        Release any previously allocated resources.
+
+        """
         pass
 
     def __str__(self):
+        """
+        String representation of the package license.
+
+        Returns:
+            A string representation of the package license, e.g. 'BSD'
+
+        """
         return '%s' % self.name()
         
     cpdef name(self):
+        """
+        Name of the package license.
+
+        Returns:
+            String object representing the license name
+
+        """
         return c_pkg.pkg_license_name(license=self._license)
 
 cdef class PkgLicenseIter(object):
+    """
+    Package license iterator object.
+
+    Provides a mechanism for iterating over the licenses of a package object.
+
+    """
     cdef c_pkg.pkg *_pkg
     cdef c_pkg.pkg_license *_license
 
     def __cinit__(self):
+        """
+        Initialize a new license iterator object.
+
+        """
         self._license = NULL
 
     cdef _init(self, c_pkg.pkg *pkg):
+        """
+        Set the C pointer of the package object.
+
+        """
         self._pkg = pkg
 
     def __dealloc__(self):
+        """
+        Release any previously allocated resources.
+
+        """
         pass
 
     def __iter__(self):
         return self
 
     def __len__(self):
+        """
+        Return the number of licenses for a package.
+
+        """
         cdef unsigned i = 0
 
         for d in self:
@@ -67,6 +121,13 @@ cdef class PkgLicenseIter(object):
         return i
 
     def __contains__(self, name):
+        """
+        Test if a package is licensed under a specific license.
+
+        Returns:
+            True if the package is licensed under the license in question, False otherwise.
+
+        """
         for l in self:
             if l.name() == name:
                 return True
@@ -74,6 +135,12 @@ cdef class PkgLicenseIter(object):
         return False
 
     def __next__(self):
+        """
+        Next license of a package.
+
+        Return the next license from the package license iterator.
+
+        """
         result = c_pkg.pkg_licenses(pkg=self._pkg, license=&self._license)
 
         if result != c_pkg.EPKG_OK:
