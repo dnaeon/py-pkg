@@ -65,7 +65,7 @@ This is how you could list all installed packages on a FreeBSD system from Pytho
 
 	db.close()
 
-For more examples, please check the [examples page](https://github.com/dnaeon/py-pkg/tree/master/src).
+For more examples, please check the [examples page](https://github.com/dnaeon/py-pkg/tree/master/examples).
 
 ## Jenkins builders
 
