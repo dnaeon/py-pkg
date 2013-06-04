@@ -278,7 +278,7 @@ cdef class Pkg(object):
             A string object representing the package arch
         
         """
-        _pkg_type = [c_pkg.PKG_FILE, c_pkg.PKG_REMOTE, c_pkg.INSTALLED]
+        _pkg_type = [c_pkg.PKG_FILE, c_pkg.PKG_REMOTE, c_pkg.PKG_INSTALLED]
         
         return self.pkg_get_attr_str(c_pkg.PKG_ARCH, _pkg_type)
 
