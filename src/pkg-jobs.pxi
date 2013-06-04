@@ -25,27 +25,57 @@
 #
 
 cdef class PkgJobs(object):
+    """
+    Package jobs object.
+
+    Provides methods for accessing various jobs functionallity.
+
+    """
     cdef c_pkg.pkg *_pkg
     cdef c_pkg.pkg_jobs *_jobs
     
     def __cinit__(self):
+        """
+        Initialize a new package jobs object.
+
+        """
         self._pkg = NULL
         self._jobs = NULL
 
     cdef _init(self, c_pkg.pkg_jobs *jobs):
+        """
+        Set the C pointer of the jobs object.
+
+        """
         self._jobs = jobs
         
     def __dealloc__(self):
-        # jobs are being free()'d on a database close
+        """
+        Deallocate any previously allocated resources.
+        
+        Jobs are being free()'d on a database close in PkgDb()
+
+        """
         pass
 
     def __iter__(self):
         return self
 
     def __len__(self):
+        """
+        Return the number of jobs we have.
+
+        """
         return c_pkg.pkg_jobs_count(jobs=self._jobs)
 
     def __contains__(self, name):
+        """
+        Test if a package is added to the jobs.
+
+        Returns:
+            True if the jobs object contains the package, False otherwise.
+
+        """
         for p in self:
             if p.name() == name or p.origin() == name:
                 return True
@@ -53,6 +83,16 @@ cdef class PkgJobs(object):
         return False
 
     def __next__(self):
+        """
+        Return the next job in the queue.
+
+        Returns:
+            Pkg() object
+
+        Raises:
+            StopIteration
+        
+        """
         result = c_pkg.pkg_jobs_next(jobs=self._jobs, pkg=&self._pkg)
 
         if result != c_pkg.EPKG_OK:
@@ -64,6 +104,15 @@ cdef class PkgJobs(object):
         return pkg_obj
 
     cpdef apply(self):
+        """
+        Apply the jobs.
+
+        Applies the action associated with the jobs object - install, deinstall, etc.
+
+        Raises:
+            PkgJobsApplyError
+
+        """
         if len(self) == 0:
             return
             
