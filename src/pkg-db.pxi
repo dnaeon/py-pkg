@@ -195,17 +195,19 @@ cdef class PkgDb(object):
         # check if we have enough permissions to install packages
         rc = c_pkg.pkgdb_access(mode=mode_access, database=db_access)
 
+        if rc == c_pkg.EPKG_ENOACCESS:
+            raise PkgAccessError, 'Insufficient permissions to install packages'            
         if rc != c_pkg.EPKG_OK:
-            raise PkgAccessError, 'Insufficient permissions to install packages'
-        
+            raise PkgDatabaseError, 'Error occurred while trying to access the database'
+
+        if not isinstance(pattern, (list, tuple)):
+            raise TypeError, 'Pattern should be of type list or tuple'
+            
         # re-open the database in remote mode if needed
         rc = c_pkg.pkgdb_open(db=&self._db, db_type=c_pkg.PKGDB_REMOTE)
 
         if rc != c_pkg.EPKG_OK:
             raise IOError, 'Cannot open the database in remote mode'
-
-        if not isinstance(pattern, (list, tuple)):
-            raise TypeError, 'Pattern should be of type list or tuple'
 
         # convert 'pattern' to a char *array[]
         cdef unsigned i
@@ -272,8 +274,10 @@ cdef class PkgDb(object):
         # check if we have enough permissions to deinstall packages
         rc = c_pkg.pkgdb_access(mode=mode_access, database=db_access)
         
-        if rc != c_pkg.EPKG_OK:
+        if rc == c_pkg.EPKG_ENOACCESS:
             raise PkgAccessError, 'Insufficient permissions to deinstall packages'
+        else if rc != c_pkg.EPKG_OK:
+            raise PkgDatabaseError, 'Error occurred while trying to access the database'
             
         if not isinstance(pattern, (list, tuple)):
             raise TypeError, 'Pattern should of type list or tuple'
@@ -337,9 +341,11 @@ cdef class PkgDb(object):
 
         # check if we have enough permissions to autoremove packages
         rc = c_pkg.pkgdb_access(mode=mode_access, database=db_access)
-        
-        if rc != c_pkg.EPKG_OK:
-            raise PkgAccessError, 'Insufficient permissions to autoremove packages'
+
+        if rc == c_pkg.EPKG_ENOACCESS:
+            raise PkgAccessError, 'Insufficient permissions to autoremove packages'        
+        else if rc != c_pkg.EPKG_OK:
+            raise PkgDatabaseError, 'Error occurred while trying to access the database'
             
         # TODO: Implement setting the rest of the pkg_flags types
     
@@ -387,8 +393,10 @@ cdef class PkgDb(object):
         # check if we have enough permissions to upgrade packages
         rc = c_pkg.pkgdb_access(mode=mode_access, database=db_access)
 
-        if rc != c_pkg.EPKG_OK:
+        if rc == c_pkg.EPKG_ENOACCESS:
             raise PkgAccessError, 'Insufficient permissions to upgrade packages'
+        else if rc != c_pkg.EPKG_OK:
+            raise PkgDatabaseError, 'Error occurred while trying to access the database'
 
         # re-open the database in remote mode if needed
         rc = c_pkg.pkgdb_open(db=&self._db, db_type=c_pkg.PKGDB_REMOTE)
