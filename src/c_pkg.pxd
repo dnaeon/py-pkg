@@ -52,17 +52,20 @@ cdef extern from 'pkg.h':
 
     cdef struct pkg_manifest_key
 
+    # Database type
     ctypedef enum pkgdb_t:
         PKGDB_DEFAULT = 0,
         PKGDB_REMOTE
 
+    # Package type
     ctypedef enum pkg_t:
         PKG_NONE       = 0,
         PKG_FILE       = (1 << 0),
         PKG_REMOTE     = (1 << 1),
         PKG_INSTALLED  = (1 << 2),
         PKG_OLD_FILE   = (1 << 3),
-        
+
+    # Package errors
     ctypedef enum pkg_error_t:
         EPKG_OK = 0,
         EPKG_END,
@@ -79,6 +82,7 @@ cdef extern from 'pkg.h':
         EPKG_ENOACCESS,
         EPKG_INSECURE,
 
+    # Match types used for specifying how we match packages
     ctypedef enum match_t:
         MATCH_ALL = 0,
         MATCH_EXACT,
@@ -86,6 +90,7 @@ cdef extern from 'pkg.h':
         MATCH_REGEX,
         MATCH_CONDITION,
 
+    # Flags for loading different attributes of a package
     ctypedef enum pkg_load_flags_t:
         PKG_LOAD_BASIC            = 0,
         PKG_LOAD_DEPS             = (1 << 0),
@@ -103,6 +108,7 @@ cdef extern from 'pkg.h':
         PKG_LOAD_SHLIBS_PROVIDED  = (1 << 12),
         PKG_LOAD_ANNOTATIONS      = (1 << 13),
 
+    # Package attributes
     ctypedef enum pkg_attr:
         PKG_ORIGIN = 1,
         PKG_NAME,
@@ -132,27 +138,32 @@ cdef extern from 'pkg.h':
         PKG_ROWID,
         PKG_TIME,
 
+    # Package dependency attributes
     ctypedef enum pkg_dep_attr:
         PKG_DEP_NAME = 0,
         PKG_DEP_ORIGIN,
         PKG_DEP_VERSION,
 
+    # License logic types
     ctypedef enum lic_t:
         LICENSE_OR     = 124, # '|'
         LICENSE_AND    = 38,  # '&'
         LICENSE_SINGLE = 1,
 
+    # Package file attributes
     ctypedef enum pkg_file_attr:
         PKG_FILE_PATH = 0,
         PKG_FILE_SUM,
         PKG_FILE_UNAME,
         PKG_FILE_GNAME,
 
+    # Package directory attributes
     ctypedef enum pkg_dir_attr:
         PKG_DIR_PATH = 0,
         PKG_DIR_UNAME,
         PKG_DIR_GNAME,
 
+    # Package job types
     ctypedef enum pkg_jobs_t:
         PKG_JOBS_INSTALL = 0,
         PKG_JOBS_DEINSTALL,
@@ -160,6 +171,7 @@ cdef extern from 'pkg.h':
         PKG_JOBS_AUTOREMOVE,
         PKG_JOBS_UPGRADE,
 
+    # Package flags used when performing an action like installation, deinstallation, etc. of packages
     ctypedef enum pkg_flags:
         PKG_FLAG_NONE                   = 0,
         PKG_FLAG_DRY_RUN                = (1 << 0),
@@ -172,11 +184,13 @@ cdef extern from 'pkg.h':
         PKG_FLAG_UPGRADES_FOR_INSTALLED = (1 << 7),
         PKG_FLAG_SKIP_INSTALL           = (1 << 8)
 
+    # Flags for testing access to the database file
     ctypedef enum pkgdb_access_perm_t:
         PKGDB_MODE_READ   = (0x1<<0),
         PKGDB_MODE_WRITE  = (0x1<<1),
         PKGDB_MODE_CREATE = (0x1<<2)
 
+    # Flags for testing access to the databases
     ctypedef enum pkgdb_access_db_t:
         PKGDB_DB_LOCAL    = (0x1<<0),
         PKGDB_DB_REPO     = (0x1<<1)
