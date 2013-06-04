@@ -482,6 +482,24 @@ cdef class PkgDb(object):
         self._jobs = jobs
         
         return jobs_obj
+
+    cpdef repositories(self):
+        """
+        Iterate over the package repositories.
+
+        Returns:
+            PkgRepoIter() object
+
+        """
+        return PkgRepoIter()
+
+    cpdef update(self):
+        """
+        Update the remote package repositories.
+        
+        """
+        pass
+                    
         
 cdef class PkgDbIter(object):
     """

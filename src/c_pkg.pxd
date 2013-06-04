@@ -194,7 +194,13 @@ cdef extern from 'pkg.h':
     ctypedef enum pkgdb_access_db_t:
         PKGDB_DB_LOCAL    = (0x1<<0),
         PKGDB_DB_REPO     = (0x1<<1)
-    
+
+    # Package repository mirror type
+    ctypedef enum mirror_t:
+        SRV = 0,
+        HTTP,
+        NOMIRROR,
+        
     int pkg_init(const char *path)
     int pkg_initialized()
     int pkg_shutdown()
@@ -271,3 +277,14 @@ cdef extern from 'pkg.h':
     int pkg_jobs_apply(pkg_jobs *jobs)
     
     pkg_t pkg_type(const pkg *pkg)
+
+    int pkg_repos(pkg_repo **repo)
+    const char *pkg_repo_url(pkg_repo *repo)
+    const char *pkg_repo_ident(pkg_repo *repo)
+    const char *pkg_repo_name(pkg_repo *repo)
+    const char *pkg_repo_key(pkg_repo *repo)
+    bint pkg_repo_enabled(pkg_repo *repo)
+    mirror_t pkg_repo_mirror_type(pkg_repo *repo)
+    pkg_repo *pkg_repo_find_ident(const char *ident)
+    pkg_repo *pkg_repo_find_name(const char *name)
+    
