@@ -324,20 +324,6 @@ cdef class Pkg(object):
         
         return self.pkg_get_attr_str(c_pkg.PKG_PREFIX, _pkg_type)
 
-    cpdef infos(self):
-        """
-        Retrieve the package infos.
-        
-        TODO: Document this attribute
-
-        Returns:
-            A string object representing the package infos
-        
-        """
-        _pkg_type = [c_pkg.PKG_FILE, c_pkg.PKG_REMOTE, c_pkg.PKG_INSTALLED]
-        
-        return self.pkg_get_attr_str(c_pkg.PKG_INFOS, _pkg_type)
-
     cpdef repopath(self):
         """
         Retrieve the package repository path.

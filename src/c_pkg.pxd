@@ -115,7 +115,6 @@ cdef extern from 'pkg.h':
         PKG_MAINTAINER,
         PKG_WWW,
         PKG_PREFIX,
-        PKG_INFOS,
         PKG_REPOPATH,
         PKG_CKSUM,
         PKG_OLD_VERSION,
