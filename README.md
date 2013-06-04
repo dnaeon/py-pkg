@@ -66,3 +66,13 @@ This is how you could list all installed packages on a FreeBSD system from Pytho
 	db.close()
 
 For more examples, please check the [examples page](https://github.com/dnaeon/py-pkg/tree/master/src).
+
+## Jenkins builders
+
+The Cython wrappers are regularly being tested and built using GCC and Clang by a Jenkins instance, which can be found here:
+
+* [GCC build of py-pkg](http://jenkins.unix-heaven.org/jenkins/job/py-pkg-gcc/)
+* [Clang build of py-pkg](http://jenkins.unix-heaven.org/jenkins/job/py-pkg-clang/)
+
+The Cython wrappers are also being tested by Jenkins against the latest libpkg version.
+
