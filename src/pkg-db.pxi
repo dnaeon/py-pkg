@@ -493,13 +493,37 @@ cdef class PkgDb(object):
         """
         return PkgRepoIter()
 
-    cpdef update(self):
+    cpdef update(self, force=False):
         """
         Update the remote package repositories.
+
+        Kwargs:
+            force (bool): Force updating of the remote repositories
+
+        Raises:
+            PkgAccessError
         
         """
-        pass
-                    
+        cdef int rc = c_pkg.EPKG_OK
+        cdef c_pkg.pkg_repo *repo = NULL
+        cdef unsigned int mode_access = c_pkg.PKGDB_MODE_WRITE | c_pkg.PKGDB_MODE_CREATE
+        cdef unsigned int db_access   = c_pkg.PKGDB_DB_REPO
+
+        # check if we have enough permissions to update the repositories
+        rc = c_pkg.pkgdb_access(mode=mode_access, database=db_access)
+
+        if rc != c_pkg.EPKG_OK:
+            raise PkgAccessError, 'Insufficient privileges to update repositories'
+        
+        while c_pkg.pkg_repos(repo=&repo) == c_pkg.EPKG_OK:
+            # TODO: We should avoid printing anything here, use event handler instead
+            print 'Updating repository %s: ' % c_pkg.pkg_repo_name(repo),
+            rc = c_pkg.pkg_update(repo=repo, force=force)
+
+            if rc == c_pkg.EPKG_OK:
+                print 'success.'
+            else:
+                print 'failed.'
         
 cdef class PkgDbIter(object):
     """
