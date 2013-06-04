@@ -161,7 +161,7 @@ cdef class PkgDb(object):
 
         return dbiter_obj
 
-    cpdef rquery(self, pattern='', match_regex=False, reponame=''):
+    cpdef rquery(self, pattern='', match_regex=False, repo=''):
         """
         Query the remote package database.
         
@@ -181,7 +181,8 @@ cdef class PkgDb(object):
         
         """
         cdef int rc = c_pkg.EPKG_OK
-        cdef c_pkg.pkgdb_it *it1 = NULL
+        cdef const char *reponame = NULL
+        cdef c_pkg.pkgdb_it *it = NULL
         cdef c_pkg.match_t match = c_pkg.MATCH_EXACT
         cdef unsigned mode_access = c_pkg.PKGDB_MODE_READ
         cdef unsigned db_access = c_pkg.PKGDB_DB_REPO
@@ -191,11 +192,14 @@ cdef class PkgDb(object):
         
         if match_regex:
             match = c_pkg.MATCH_REGEX
-            
+
         # if no pattern is specified return all packages in the database
         if not pattern:
             match = c_pkg.MATCH_ALL
-                                                                        
+
+        if repo:
+            reponame = repo
+            
         rc = c_pkg.pkgdb_access(mode=mode_access, database=db_access)
         
         if rc == c_pkg.EPKG_ENOACCESS:
@@ -203,18 +207,18 @@ cdef class PkgDb(object):
         elif rc != c_pkg.EPKG_OK:
             raise IOError, 'Cannot access the package database'
 
-        # re-open the database in remote mode
+        # re-open the database in remote mode if needed
         rc = c_pkg.pkgdb_open(db=&self._db, db_type=c_pkg.PKGDB_REMOTE)
 
         if rc != c_pkg.EPKG_OK:
             raise PkgDatabaseError, 'Cannot open the package database in remote mode'
             
-        it1 = c_pkg.pkgdb_rquery(db=self._db, pattern=pattern, match=match, reponame=reponame)
+        it = c_pkg.pkgdb_rquery(db=self._db, pattern=pattern, match=match, reponame=reponame)
 
-        if it1 == NULL:
+        if it == NULL:
             raise PkgDatabaseError, 'Cannot query the package database'
 
-        dbiter_obj._init(it1)
+        dbiter_obj._init(it)
 
         return dbiter_obj
         
