@@ -25,41 +25,96 @@
 #
 
 cdef class PkgShlib(object):
+    """
+    Package shared library object.
+
+    Provides methods for access attributes of package shared libraries.
+
+    """
     cdef c_pkg.pkg_shlib *_shlib
 
     def __cinit__(self):
+        """
+        Initialize a new package shared library object.
+
+        """
         self._shlib = NULL
 
     cdef _init(self, c_pkg.pkg_shlib *shlib):
+        """
+        Set the C pointer of a package shared library object.
+
+        """
         self._shlib = shlib
 
     def __dealloc__(self):
+        """
+        Release any previously allocated resources.
+
+        """
         pass
 
     def __str__(self):
+        """
+        String representation of a package shared library.
+
+        Returns:
+            String object representing the name of a shared library.
+
+        """
         return '%s' % self.name()
         
     cpdef name(self):
+        """
+        Retrieve the name of a package shared library.
+
+        Returns:
+            String object representing the name of the shared library.
+
+        """
         return c_pkg.pkg_shlib_name(shlib=self._shlib)
 
 cdef class PkgShlibsRequiredIter(object):
+    """
+    Package shared library iterator object (required libraries).
+
+    Provides a mechanism for iterating over the
+    required shared libraries by a package.
+
+    """
     cdef c_pkg.pkg *_pkg
     cdef c_pkg.pkg_shlib *_shlib
 
     def __cinit__(self):
+        """
+        Initialize a new shared library iterator.
+
+        """
         self._pkg = NULL
         self._shlib = NULL
 
     cdef _init(self, c_pkg.pkg *pkg):
+        """
+        Set the C pointer of a package object.
+
+        """
         self._pkg = pkg
 
     def __dealloc__(self):
+        """
+        Release any previously allocated resources.
+
+        """
         pass
 
     def __iter__(self):
         return self
 
     def __len__(self):
+        """
+        Return the number of required shared libraries by a package.
+
+        """
         cdef unsigned i = 0
 
         for d in self:
@@ -68,6 +123,13 @@ cdef class PkgShlibsRequiredIter(object):
         return i
 
     def __contains__(self, name):
+        """
+        Test if a package requires a shared library.
+
+        Returns:
+            True if the package requires a library, False otherwise.
+
+        """
         for s in self:
             if s.name() == name:
                 return True
@@ -75,6 +137,16 @@ cdef class PkgShlibsRequiredIter(object):
         return False
 
     def __next__(self):
+        """
+        Return the next required shared library from the iterator.
+
+        Returns:
+            PkgShlib() object
+
+        Raises:
+            StopIteration
+        
+        """
         result = c_pkg.pkg_shlibs_required(pkg=self._pkg, shlib=&self._shlib)
 
         if result != c_pkg.EPKG_OK:
@@ -86,7 +158,19 @@ cdef class PkgShlibsRequiredIter(object):
         return pkg_shlib_obj
 
 cdef class PkgShlibsProvidedIter(PkgShlibsRequiredIter):
+    """
+    Package shared library iterator (provided libraries).
 
+    Provides a mechanism for iterating over the shared
+    libraries provided by a packages.
+
+    Extends:
+        PkgShlibsProvidedIter()
+
+    Overrides:
+        __next__()
+
+    """
     def __next__(self):
         result = c_pkg.pkg_shlibs_provided(pkg=self._pkg, shlib=&self._shlib)
 
