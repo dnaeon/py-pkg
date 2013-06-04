@@ -210,6 +210,11 @@ cdef extern from 'pkg.h':
                           const char *pattern,
                           match_t match)
 
+    pkgdb_it *pkgdb_rquery(pkgdb *db,
+                           const char *pattern,
+                           match_t match,
+                           const char *reponame)
+    
     int pkgdb_it_next(pkgdb_it *it, pkg **pkg, unsigned flags)
 
     void pkgdb_it_reset(pkgdb_it *it)

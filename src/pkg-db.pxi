@@ -124,7 +124,7 @@ cdef class PkgDb(object):
             PkgDbIter() object that is ready for iteration over the query results
 
         Raises:
-            IOerror
+            IOerror, PkgAccessError, PkgDatabaseError
 
         """
         cdef int rc = c_pkg.EPKG_OK
@@ -133,7 +133,6 @@ cdef class PkgDb(object):
         cdef unsigned mode_access = c_pkg.PKGDB_MODE_READ
         cdef unsigned db_access = c_pkg.PKGDB_DB_LOCAL
         dbiter_obj = PkgDbIter()
-
                                 
         # TODO: Implement the rest of the match_t types
         
@@ -148,9 +147,9 @@ cdef class PkgDb(object):
             
         if rc == c_pkg.EPKG_ENOACCESS:
             raise PkgAccessError, 'Insufficient permissions to query the database'
-        else if rc == c_pkg.EPKG_ENODB:
+        elif rc == c_pkg.EPKG_ENODB:
             raise PkgDatabaseError, 'There is no package database or no package installed'
-        else if rc != c_pkg.EPKG_OK:
+        elif rc != c_pkg.EPKG_OK:
             raise IOError, 'Cannot access the package database'
             
         it = c_pkg.pkgdb_query(db=self._db, pattern=pattern, match=match)
@@ -162,6 +161,63 @@ cdef class PkgDb(object):
 
         return dbiter_obj
 
+    cpdef rquery(self, pattern='', match_regex=False, reponame=''):
+        """
+        Query the remote package database.
+        
+        Queries the remote package database and returns a package iterator,
+        which can be used to iterate over the results matchings 'pattern'.
+        
+        Kwargs:
+            pattern     (str)  : Pattern to query the database for
+            match_regex (bool) : Treat 'pattern' as a regular expression
+            reponame    (str)  : Repository to use for the query
+        
+        Returns:
+            PkgDbIter() object that is ready for iteration over the query results
+        
+        Raises:
+            IOerror, PkgAccessError, PkgDatabaseError
+        
+        """
+        cdef int rc = c_pkg.EPKG_OK
+        cdef c_pkg.pkgdb_it *it1 = NULL
+        cdef c_pkg.match_t match = c_pkg.MATCH_EXACT
+        cdef unsigned mode_access = c_pkg.PKGDB_MODE_READ
+        cdef unsigned db_access = c_pkg.PKGDB_DB_REPO
+        dbiter_obj = PkgDbIter()
+
+        # TODO: Implement the rest of the match_t types
+        
+        if match_regex:
+            match = c_pkg.MATCH_REGEX
+            
+        # if no pattern is specified return all packages in the database
+        if not pattern:
+            match = c_pkg.MATCH_ALL
+                                                                        
+        rc = c_pkg.pkgdb_access(mode=mode_access, database=db_access)
+        
+        if rc == c_pkg.EPKG_ENOACCESS:
+            raise PkgAccessError, 'Insufficient permissions to query the database'
+        elif rc != c_pkg.EPKG_OK:
+            raise IOError, 'Cannot access the package database'
+
+        # re-open the database in remote mode
+        rc = c_pkg.pkgdb_open(db=&self._db, db_type=c_pkg.PKGDB_REMOTE)
+
+        if rc != c_pkg.EPKG_OK:
+            raise PkgDatabaseError, 'Cannot open the package database in remote mode'
+            
+        it1 = c_pkg.pkgdb_rquery(db=self._db, pattern=pattern, match=match, reponame=reponame)
+
+        if it1 == NULL:
+            raise PkgDatabaseError, 'Cannot query the package database'
+
+        dbiter_obj._init(it1)
+
+        return dbiter_obj
+        
     cpdef install(self, pattern=None, match_regex=False):
         """
         Query the remote database for packages for installation.
@@ -276,7 +332,7 @@ cdef class PkgDb(object):
         
         if rc == c_pkg.EPKG_ENOACCESS:
             raise PkgAccessError, 'Insufficient permissions to deinstall packages'
-        else if rc != c_pkg.EPKG_OK:
+        elif rc != c_pkg.EPKG_OK:
             raise PkgDatabaseError, 'Error occurred while trying to access the database'
             
         if not isinstance(pattern, (list, tuple)):
@@ -344,7 +400,7 @@ cdef class PkgDb(object):
 
         if rc == c_pkg.EPKG_ENOACCESS:
             raise PkgAccessError, 'Insufficient permissions to autoremove packages'        
-        else if rc != c_pkg.EPKG_OK:
+        elif rc != c_pkg.EPKG_OK:
             raise PkgDatabaseError, 'Error occurred while trying to access the database'
             
         # TODO: Implement setting the rest of the pkg_flags types
@@ -395,7 +451,7 @@ cdef class PkgDb(object):
 
         if rc == c_pkg.EPKG_ENOACCESS:
             raise PkgAccessError, 'Insufficient permissions to upgrade packages'
-        else if rc != c_pkg.EPKG_OK:
+        elif rc != c_pkg.EPKG_OK:
             raise PkgDatabaseError, 'Error occurred while trying to access the database'
 
         # re-open the database in remote mode if needed
