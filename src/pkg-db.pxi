@@ -524,6 +524,41 @@ cdef class PkgDb(object):
                 print 'success.'
             else:
                 print 'failed.'
+
+    cpdef which(self, name, match_glob=False):
+        """
+        Query which package provides a file.
+
+        Args:
+            name       (str)  : File to query the database for
+
+        Kwargs:
+            match_glob (bool) : If True treat 'name' as a glob expression
+
+        Returns:
+            PkgDbIter() object
+
+        """
+        cdef int rc = c_pkg.EPKG_OK
+        cdef c_pkg.pkgdb_it *it = NULL
+        cdef unsigned mode_access = c_pkg.PKGDB_MODE_READ
+        cdef unsigned db_access = c_pkg.PKGDB_DB_LOCAL
+        dbiter_obj = PkgDbIter()
+
+        rc = c_pkg.pkgdb_access(mode=mode_access, database=db_access)
+
+        if rc != c_pkg.EPKG_OK:
+            raise PkgAccessError, 'Cannot query the package database'
+
+        it = c_pkg.pkgdb_query_which(db=self._db, path=name, glob=match_glob)
+
+        if it == NULL:
+            raise PkgDatabaseError, 'Cannot query the database'
+
+        db_iter_obj = PkgDbIter()
+        db_iter_obj._init(it)
+
+        return db_iter_obj
         
 cdef class PkgDbIter(object):
     """

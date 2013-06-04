@@ -289,4 +289,6 @@ cdef extern from 'pkg.h':
     pkg_repo *pkg_repo_find_name(const char *name)
     
     int pkg_update(pkg_repo *repo, bint force)
+
+    pkgdb_it *pkgdb_query_which(pkgdb *db, const char *path, bint glob)
     
