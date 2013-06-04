@@ -233,7 +233,7 @@ cdef class Pkg(object):
             A string object representing the package description
         
         """
-        _pkg_type = [c_pkg.PKG_FILE, c_pkg.PKG_REMOTE, c_pkg.INSTALLED]
+        _pkg_type = [c_pkg.PKG_FILE, c_pkg.PKG_REMOTE, c_pkg.PKG_INSTALLED]
         
         return self.pkg_get_attr_str(c_pkg.PKG_DESC, _pkg_type)
 
@@ -306,7 +306,7 @@ cdef class Pkg(object):
             A string object representing the package web site
 
         """
-        _pkg_type = [c_pkg.PKG_FILE, c_pkg.PKG_REMOTE, c_pkg.INSTALLED]
+        _pkg_type = [c_pkg.PKG_FILE, c_pkg.PKG_REMOTE, c_pkg.PKG_INSTALLED]
         
         return self.pkg_get_attr_str(c_pkg.PKG_WWW, _pkg_type)
 
