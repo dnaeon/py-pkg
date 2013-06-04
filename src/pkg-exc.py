@@ -24,6 +24,14 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+class PkgDatabaseError(Exception):
+    """
+    Indicates that an error occurred while trying to access
+    certain functions related to database access.
+
+    """
+    pass
+
 class PkgAlreadyInitialized(Exception):
     """
     Indicates that the library has already been initialized.

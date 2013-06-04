@@ -127,10 +127,14 @@ cdef class PkgDb(object):
             IOerror
 
         """
+        cdef int rc = c_pkg.EPKG_OK
         cdef c_pkg.pkgdb_it *it = NULL
         cdef c_pkg.match_t match = c_pkg.MATCH_EXACT
+        cdef unsigned mode_access = c_pkg.PKGDB_MODE_READ
+        cdef unsigned db_access = c_pkg.PKGDB_DB_LOCAL
         dbiter_obj = PkgDbIter()
 
+                                
         # TODO: Implement the rest of the match_t types
         
         if match_regex:
@@ -140,6 +144,15 @@ cdef class PkgDb(object):
         if not pattern:
             match = c_pkg.MATCH_ALL
 
+        rc = c_pkg.pkgdb_access(mode=mode_access, database=db_access)
+            
+        if rc == c_pkg.EPKG_ENOACCESS:
+            raise PkgAccessError, 'Insufficient permissions to query the database'
+        else if rc == c_pkg.EPKG_ENODB:
+            raise PkgDatabaseError, 'There is no package database or no package installed'
+        else if rc != c_pkg.EPKG_OK:
+            raise IOError, 'Cannot access the package database'
+            
         it = c_pkg.pkgdb_query(db=self._db, pattern=pattern, match=match)
 
         if it == NULL:
