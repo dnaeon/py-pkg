@@ -73,6 +73,13 @@ The Cython wrappers are regularly being tested and built using GCC and Clang by 
 
 * [GCC build of py-pkg](http://jenkins.unix-heaven.org/jenkins/job/py-pkg-gcc/)
 * [Clang build of py-pkg](http://jenkins.unix-heaven.org/jenkins/job/py-pkg-clang/)
+* [Sphinx build of py-pkg](http://jenkins.unix-heaven.org/jenkins/job/py-pkg-docs/)
 
 The Cython wrappers are also being tested by Jenkins against the latest libpkg version.
+
+## Documentation
+
+You can find the [Sphinx](http://sphinx-doc.org) documentation of *py-pkg* at the link below:
+
+* [Sphinx documentation of py-pkg](http://jenkins.unix-heaven.org/jenkins/job/py-pkg-docs/py-pkg_Sphinx_Documentation)
 
