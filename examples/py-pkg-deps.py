@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-# File            : py-pkg-deps.py
-# Author          : Marin Atanasov Nikolov <dnaeon@gmail.com>
-# Example purpose : Display package dependencies
+# File        : py-pkg-deps.py
+# Author      : Marin Atanasov Nikolov <dnaeon@gmail.com>
+# Description : Display package dependencies
 
 import pkg
 
@@ -12,14 +12,16 @@ pkgs = db.query()
 pkgs.load_deps()
 
 for pkg in pkgs:
-    print pkg
-    print '-' * len(pkg.name() + '-' + pkg.version())
+    print pkg.origin()
+    print '-' * len(pkg.origin())
 
     if not len(pkg.deps()):
-        print '\t<Does not have dependencies>'
+        print '\t<Does not have dependencies>\n'
         continue
 
     for dep in pkg.deps():
         print '\t%s' % dep
+
+    print
 
 db.close()
