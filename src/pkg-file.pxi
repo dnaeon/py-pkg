@@ -58,6 +58,13 @@ cdef class PkgFile(object):
         """
         pass
 
+    def __str__(self):
+        """
+        String representation of a package file object.
+
+        """
+        return self.path()
+        
     cpdef path(self):
         """
         Retrieve the path of a file provided by a package.
