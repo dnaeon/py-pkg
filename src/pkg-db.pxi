@@ -559,6 +559,20 @@ cdef class PkgDb(object):
         db_iter_obj._init(it)
 
         return db_iter_obj
+
+    cpdef pkg_is_installed(self, origin):
+        """
+        Check if a package is installed.
+
+        Args:
+            origin (str): Package origin to check
+
+        Returns:
+            True if the package is installed, False otherwise
+
+        """
+        return c_pkg.pkg_is_installed(db=self._db, origin=origin)
+        
         
 cdef class PkgDbIter(object):
     """

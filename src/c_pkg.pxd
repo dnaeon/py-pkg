@@ -292,3 +292,4 @@ cdef extern from 'pkg.h':
 
     pkgdb_it *pkgdb_query_which(pkgdb *db, const char *path, bint glob)
     
+    int pkg_is_installed(pkgdb *db, const char *origin)
