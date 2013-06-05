@@ -24,6 +24,8 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+#cython: embedsignature=True
+
 cimport c_pkg
 
 include 'pkg-exc.py'
