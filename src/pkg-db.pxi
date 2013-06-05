@@ -689,6 +689,8 @@ cdef class PkgDbIter(object):
             True if package is found in the iterator, False otherwise
 
         """
+        c_pkg.pkgdb_it_reset(it=self._it)
+        
         for p in self:
             if p.name() == name or p.origin() == name:
                 return True
