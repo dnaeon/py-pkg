@@ -571,7 +571,12 @@ cdef class PkgDb(object):
             True if the package is installed, False otherwise
 
         """
-        return c_pkg.pkg_is_installed(db=self._db, origin=origin)
+        rc = c_pkg.pkg_is_installed(db=self._db, origin=origin)
+
+        if rc == c_pkg.EPKG_OK:
+            return True
+        else:
+            return False
         
         
 cdef class PkgDbIter(object):
